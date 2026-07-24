@@ -161,7 +161,7 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="space-y-6 sm:space-y-8 py-6 sm:py-10 relative">
+    <div className="space-y-4 sm:space-y-8 py-2 sm:py-6 relative">
       <DroneDeploymentModal isOpen={isDeployModalOpen} onClose={() => setIsDeployModalOpen(false)} />
 
       {/* ── Floating Side Section Quick Jump Bar ── */}

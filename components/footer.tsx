@@ -6,7 +6,7 @@ import { Waves, PhoneCall, Mail, MapPin, Globe, ShieldAlert, FileText, Info } fr
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="w-full border-t border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-[#18202c] text-slate-700 dark:text-slate-300 py-12 px-4 sm:px-6 lg:px-8">
+    <footer className="w-full border-t border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-[#18202c] text-slate-700 dark:text-slate-300 pt-4 sm:pt-10 pb-24 sm:pb-10 px-4 sm:px-6 lg:px-8 mt-2">
       <div className="max-w-7xl mx-auto space-y-10">
         
         {/* Top Emergency Helplines Special Area */}
