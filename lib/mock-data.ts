@@ -497,7 +497,7 @@ export const marineSpecies: MarineSpecies[] = [
   }
 ];
 
-// 12 AI DETECTIONS & SCANS
+// 6 AI DETECTIONS & SCANS (100% UNIQUE DEEP OCEAN IMAGES)
 export const aiDetections: AIDetection[] = [
   {
     id: 'DET-901',
@@ -537,7 +537,7 @@ export const aiDetections: AIDetection[] = [
     timestamp: 'Today, 08:44 UTC',
     coordinates: [10.55, -42.12],
     depth: 0,
-    imageUrl: 'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=800&q=80',
     details: 'Synthetic Aperture Radar (SAR) echo confirmed fuel hydrocarbon slick from unregistered vessel.',
     sectorName: 'Sector 4 - Mid-Atlantic Deep Ridge',
     oceanBasin: 'Atlantic Ocean',
@@ -552,7 +552,7 @@ export const aiDetections: AIDetection[] = [
     timestamp: 'Yesterday, 22:10 UTC',
     coordinates: [15.02, 145.18],
     depth: 4200,
-    imageUrl: 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1545671913-b89ac1b4ac10?auto=format&fit=crop&w=800&q=80',
     details: 'Submersed industrial chemical containers leaking heavy metals into benthic boundary layer.',
     sectorName: 'Sector 1 - Mariana Trench Abyss',
     oceanBasin: 'Pacific Ocean',
@@ -567,7 +567,7 @@ export const aiDetections: AIDetection[] = [
     timestamp: 'Today, 06:18 UTC',
     coordinates: [-58.42, -64.14],
     depth: 3900,
-    imageUrl: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80',
     details: 'Extensive mineral plume choking benthic vent communities in Antarctic Basin.',
     sectorName: 'Sector 6 - Southern Ocean Antarctic Basin',
     oceanBasin: 'Southern Ocean',
