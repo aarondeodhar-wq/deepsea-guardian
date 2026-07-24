@@ -164,19 +164,22 @@ export default function HomePage() {
     <div className="space-y-4 sm:space-y-8 py-2 sm:py-6 relative">
       <DroneDeploymentModal isOpen={isDeployModalOpen} onClose={() => setIsDeployModalOpen(false)} />
 
-      {/* ── Floating Side Section Quick Jump Bar ── */}
-      <div className="fixed right-3 top-1/2 -translate-y-1/2 z-30 hidden xl:flex flex-col items-end gap-2 pointer-events-auto">
-        <div className="p-3 rounded-2xl flex flex-col gap-1 glass-panel shadow-2xl transition-all border border-slate-200/80 dark:border-white/10">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-white/40 px-2 pb-1.5 border-b border-slate-200/60 dark:border-white/10">
-            Navigation
-          </span>
+      {/* ── Floating Side Section Quick Jump Bar (macOS Collapsible Spring Dock) ── */}
+      <div className="fixed right-3 top-1/2 -translate-y-1/2 z-30 hidden xl:flex flex-col items-end pointer-events-auto group/nav">
+        <div className="p-2 rounded-2xl flex flex-col gap-1 glass-panel shadow-2xl transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] border border-slate-300 dark:border-white/10 w-12 group-hover/nav:w-48 overflow-hidden">
+          <div className="flex items-center justify-between px-1.5 pb-1.5 border-b border-slate-200/60 dark:border-white/10 whitespace-nowrap">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-white/40 opacity-0 group-hover/nav:opacity-100 transition-opacity duration-200">
+              Navigation
+            </span>
+            <span className="w-2 h-2 rounded-full bg-teal-500/80 animate-pulse shrink-0" />
+          </div>
           {sectionsList.map((sec) => {
             const isActive = activeSection === sec.id;
             return (
               <button
                 key={sec.id}
                 onClick={() => scrollToSection(sec.id)}
-                className="group relative flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl text-xs transition-all ios-spring"
+                className="relative flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl text-xs transition-all duration-200 ios-spring"
                 style={
                   isActive
                     ? { background: `${sec.color}18`, border: `1px solid ${sec.color}35`, color: sec.color }
@@ -184,13 +187,13 @@ export default function HomePage() {
                 }
               >
                 <span
-                  className="w-2 h-2 rounded-full transition-all shrink-0"
+                  className="w-2.5 h-2.5 rounded-full transition-all shrink-0"
                   style={{
                     background: isActive ? sec.color : 'var(--txt-muted)',
-                    boxShadow: isActive ? `0 0 8px ${sec.color}` : 'none',
+                    boxShadow: isActive ? `0 0 10px ${sec.color}` : 'none',
                   }}
                 />
-                <span className={`text-xs whitespace-nowrap tracking-tight ${isActive ? 'font-bold' : 'font-medium hover:text-slate-900 dark:hover:text-white'}`}>
+                <span className={`text-xs whitespace-nowrap tracking-tight opacity-0 group-hover/nav:opacity-100 transition-opacity duration-200 ${isActive ? 'font-bold' : 'font-medium hover:text-slate-900 dark:hover:text-white'}`}>
                   {sec.label}
                 </span>
               </button>
