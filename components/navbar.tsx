@@ -188,9 +188,16 @@ export const Navbar: React.FC = () => {
             >
               <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#2dd4bf' }} />
             </div>
-            <div className="hidden sm:flex flex-col leading-none">
-              <span className="font-black text-sm tracking-wider text-slate-900 dark:text-white">DEEPSEA</span>
-              <span className="font-bold text-[10px] tracking-widest" style={{ color: '#2dd4bf' }}>GUARDIAN</span>
+            <div className="flex flex-col leading-none">
+              <div className="flex items-center gap-1">
+                <span className="font-black text-xs sm:text-sm tracking-wider text-slate-900 dark:text-white">DEEPSEA</span>
+                <span className="font-bold text-[10px] sm:text-[11px] tracking-widest" style={{ color: '#2dd4bf' }}>GUARDIAN</span>
+              </div>
+              <span className="text-[9px] font-mono text-emerald-500 font-bold flex items-center gap-1 mt-0.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="hidden min-[380px]:inline">14 AUV Swarm Active</span>
+                <span className="min-[380px]:hidden">14 AUVs</span>
+              </span>
             </div>
           </Link>
 
