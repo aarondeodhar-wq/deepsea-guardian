@@ -38,17 +38,20 @@ function Section({ id, children, accent = C.teal, className = '' }: {
 }
 
 /* ─── CARD — glass-card + colored accent border ─── */
-function Card({ children, accent = C.teal, className = '', hover = true }: {
-  children: React.ReactNode; accent?: string; className?: string; hover?: boolean;
+function Card({ href, onClick, children, accent = C.teal, className = '', hover = true }: {
+  href?: string; onClick?: () => void; children: React.ReactNode; accent?: string; className?: string; hover?: boolean;
 }) {
-  return (
+  const content = (
     <div
-      className={`rounded-2xl p-5 glass-card transition-all ${hover ? 'ios-float' : ''} ${className}`}
+      className={`rounded-2xl p-5 glass-card transition-all ${hover ? 'ios-float group cursor-pointer' : ''} ${className}`}
       style={{ border: `1px solid ${accent}1e` }}
+      onClick={onClick}
     >
       {children}
     </div>
   );
+  if (href) return <Link href={href} className="block group">{content}</Link>;
+  return content;
 }
 
 /* ─── PILL badge ─── */
@@ -298,7 +301,7 @@ export default function HomePage() {
           {oceanSectors.slice(0, 6).map((sector) => {
             const riskColor = sector.pollutionRisk === 'Critical' ? C.rose : sector.pollutionRisk === 'Moderate' ? C.amber : C.emerald;
             return (
-              <Card key={sector.id} accent={C.emerald} className="space-y-4">
+              <Card key={sector.id} href="/map" accent={C.emerald} className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-mono font-black px-2.5 py-0.5 rounded"
                     style={{ background: `${C.emerald}14`, border: `1px solid ${C.emerald}28`, color: C.emerald }}>{sector.id}</span>
@@ -306,7 +309,7 @@ export default function HomePage() {
                     style={{ background: `${riskColor}12`, border: `1px solid ${riskColor}25`, color: riskColor }}>{sector.pollutionRisk} Risk</span>
                 </div>
                 <div>
-                  <h3 className="text-base font-bold" style={{ color: 'var(--txt-primary)' }}>{sector.name}</h3>
+                  <h3 className="text-base font-bold group-hover:text-emerald-400 transition-colors" style={{ color: 'var(--txt-primary)' }}>{sector.name}</h3>
                   <p className="text-xs font-mono mt-0.5" style={{ color: 'var(--txt-muted)' }}>{sector.oceanBasin}</p>
                 </div>
                 <div className="grid grid-cols-2 gap-3 text-xs pt-3 font-mono" style={divStyle}>
@@ -319,10 +322,10 @@ export default function HomePage() {
                     <strong style={{ color: C.cyan }}>{sector.depthMeters}m</strong>
                   </div>
                 </div>
-                <Link href="/map" className="w-full py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ios-spring"
+                <div className="w-full py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 ios-spring"
                   style={{ background: `${C.emerald}12`, border: `1px solid ${C.emerald}22`, color: C.emerald }}>
                   Inspect GIS Map Layer <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
+                </div>
               </Card>
             );
           })}
@@ -343,14 +346,14 @@ export default function HomePage() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[aiDetections[0], aiDetections[1], aiDetections[2]].map((detection) => (
-            <Card key={detection.id} accent={C.rose} className="overflow-hidden !p-0 space-y-0">
+            <Card key={detection.id} href="/ai-detection" accent={C.rose} className="overflow-hidden !p-0 space-y-0">
               <div className="relative h-48 sm:h-56 w-full bg-slate-900 overflow-hidden">
                 {!failedImages[detection.id] ? (
                   <img
                     src={detection.imageUrl}
                     alt={detection.title}
                     onError={() => handleImageError(detection.id)}
-                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     loading="lazy"
                   />
                 ) : (
@@ -374,16 +377,15 @@ export default function HomePage() {
               </div>
               <div className="p-4 sm:p-5 space-y-2">
                 <span className="text-[10px] font-mono font-bold block" style={{ color: C.rose }}>{detection.sectorName}</span>
-                <h4 className="font-bold text-sm leading-snug" style={{ color: 'var(--txt-primary)' }}>{detection.title}</h4>
+                <h4 className="font-bold text-sm leading-snug group-hover:text-rose-400 transition-colors" style={{ color: 'var(--txt-primary)' }}>{detection.title}</h4>
                 <p className="text-xs leading-relaxed" style={{ color: 'var(--txt-secondary)' }}>{detection.details}</p>
-                <Link
-                  href="/ai-detection"
+                <div
                   className="inline-flex items-center gap-1 text-[11px] font-bold pt-1 ios-spring"
                   style={{ color: C.rose }}
                 >
                   <span>Inspect Neural Reticle</span>
                   <span>→</span>
-                </Link>
+                </div>
               </div>
             </Card>
           ))}
@@ -408,14 +410,14 @@ export default function HomePage() {
           {marineSpecies.slice(0, 4).map((species) => {
             const statusColor = species.status === 'Endangered' ? C.rose : species.status === 'Vulnerable' ? C.amber : C.emerald;
             return (
-              <Card key={species.id} accent={C.amber} className="space-y-3">
+              <Card key={species.id} href="/biodiversity" accent={C.amber} className="space-y-3">
                 <div className="relative h-32 w-full rounded-xl overflow-hidden bg-slate-900">
                   {!failedImages[species.id] ? (
                     <img
                       src={species.imageUrl}
                       alt={species.name}
                       onError={() => handleImageError(species.id)}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       loading="lazy"
                     />
                   ) : (
@@ -429,7 +431,7 @@ export default function HomePage() {
                     style={{ background: `${statusColor}dd`, color: '#040d14' }}>{species.status}</span>
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm" style={{ color: 'var(--txt-primary)' }}>{species.name}</h4>
+                  <h4 className="font-bold text-sm group-hover:text-amber-400 transition-colors" style={{ color: 'var(--txt-primary)' }}>{species.name}</h4>
                   <span className="text-[10px] font-mono block" style={{ color: 'var(--txt-muted)' }}>{species.scientificName}</span>
                 </div>
                 <div className="flex items-center justify-between text-[10px] font-mono pt-2" style={{ ...divStyle, color: 'var(--txt-muted)' }}>
