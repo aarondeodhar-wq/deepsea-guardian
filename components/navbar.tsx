@@ -416,7 +416,8 @@ export const Navbar: React.FC = () => {
       {/* ─── CONTROL CENTER MODAL ─── */}
       {controlCenterOpen && (
         <div
-          className="fixed inset-0 z-50 flex flex-col modal-overlay"
+          className="fixed inset-0 z-50 flex flex-col"
+          style={{ background: 'rgba(0,0,0,0.80)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
           onClick={(e) => { if (e.target === e.currentTarget) setControlCenterOpen(false); }}
         >
           <div
@@ -437,16 +438,16 @@ export const Navbar: React.FC = () => {
                   <Satellite className="w-5 h-5" style={{ color: '#2dd4bf' }} />
                 </div>
                 <div>
-                  <h2 className="text-xl font-black text-white tracking-tight">Platform Control Center</h2>
-                  <p className="text-xs text-white/40 font-mono mt-0.5">12 modules · All ocean systems</p>
+                  <h2 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">Platform Control Center</h2>
+                  <p className="text-xs text-slate-500 dark:text-white/40 font-mono mt-0.5">12 modules · All ocean systems</p>
                 </div>
               </div>
               <button
                 onClick={() => setControlCenterOpen(false)}
-                className="p-2.5 rounded-2xl ios-bubble"
-                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}
+                className="p-2.5 rounded-2xl ios-bubble text-slate-600 dark:text-white/60"
+                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
               >
-                <X className="w-5 h-5 text-white/60" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
@@ -554,13 +555,7 @@ export const Navbar: React.FC = () => {
 
       {/* ─── MOBILE BOTTOM DOCK ─── */}
       <div
-        className="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 lg:hidden w-[92vw] max-w-sm rounded-full p-1.5 flex items-center justify-around"
-        style={{
-          background: 'rgba(8, 14, 26, 0.92)',
-          backdropFilter: 'blur(40px)',
-          border: '1px solid rgba(255,255,255,0.08)',
-          boxShadow: '0 12px 40px rgba(0,0,0,0.6), 0 4px 12px rgba(0,0,0,0.4)',
-        }}
+        className="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 lg:hidden w-[92vw] max-w-sm rounded-full p-1.5 flex items-center justify-around glass-panel shadow-2xl border border-slate-300 dark:border-white/10"
       >
         {[
           { href: '/', icon: ShieldCheck, label: 'Home', color: '#2dd4bf' },
@@ -573,13 +568,13 @@ export const Navbar: React.FC = () => {
             <Link
               key={href}
               href={href}
-              className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-full ios-bubble"
-              style={isActive ? { background: `${color}15`, border: `1px solid ${color}25` } : {}}
+              className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-full ios-bubble"
+              style={isActive ? { background: `${color}18`, border: `1px solid ${color}30` } : {}}
             >
-              <Icon className="w-4 h-4" style={{ color: isActive ? color : 'rgba(255,255,255,0.35)' }} />
+              <Icon className="w-4 h-4" style={{ color: isActive ? color : 'var(--txt-muted)' }} />
               <span
                 className="text-[9px] font-bold"
-                style={{ color: isActive ? color : 'rgba(255,255,255,0.3)' }}
+                style={{ color: isActive ? color : 'var(--txt-muted)' }}
               >
                 {label}
               </span>
@@ -588,8 +583,8 @@ export const Navbar: React.FC = () => {
         })}
         <button
           onClick={() => setControlCenterOpen(true)}
-          className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-full ios-bubble"
-          style={{ background: 'rgba(45,212,191,0.12)', border: '1px solid rgba(45,212,191,0.2)' }}
+          className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-full ios-bubble"
+          style={{ background: 'rgba(45,212,191,0.16)', border: '1px solid rgba(45,212,191,0.3)' }}
         >
           <Satellite className="w-4 h-4" style={{ color: '#2dd4bf' }} />
           <span className="text-[9px] font-bold" style={{ color: '#2dd4bf' }}>Hub</span>

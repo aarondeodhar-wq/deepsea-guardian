@@ -131,7 +131,7 @@ export const GuardianAI: React.FC = () => {
       <button
         onClick={() => { setIsOpen(true); setIsMinimised(false); }}
         aria-label="Open Guardian AI Assistant"
-        className="fixed bottom-20 right-4 lg:bottom-8 lg:right-6 z-40 flex items-center gap-2.5 px-4 py-3 rounded-2xl ios-spring"
+        className="fixed bottom-24 right-3 sm:bottom-20 sm:right-6 lg:bottom-8 lg:right-6 z-40 flex items-center gap-2.5 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl ios-spring"
         style={{
           background: 'linear-gradient(135deg, rgba(4,8,20,0.92), rgba(8,14,28,0.92))',
           backdropFilter: 'blur(20px)',
