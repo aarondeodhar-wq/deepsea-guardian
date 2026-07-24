@@ -392,7 +392,7 @@ export const aiDetections: AIDetection[] = [
     timestamp: 'Today, 12:15 UTC',
     coordinates: [-18.21, 154.52],
     depth: 850,
-    imageUrl: 'https://images.unsplash.com/photo-1621451537084-482c73073a0f?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80',
     details: 'Heavy nylon monofilament gillnet drifting in pelagic migratory path of endangered turtles.',
     sectorName: 'Sector 3 - Coral Sea Apex Seamount',
     oceanBasin: 'Pacific Ocean',

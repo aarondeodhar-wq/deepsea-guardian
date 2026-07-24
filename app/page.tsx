@@ -338,16 +338,16 @@ export default function HomePage() {
           </div>
           <ActionBtn href="/ai-detection" accent={C.rose}><Eye className="w-4 h-4" />Open Vision Lab</ActionBtn>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {aiDetections.slice(0, 2).map((detection) => (
-            <Card key={detection.id} accent={C.rose} className="overflow-hidden !p-0">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[aiDetections[0], aiDetections[1], aiDetections[2]].map((detection) => (
+            <Card key={detection.id} accent={C.rose} className="overflow-hidden !p-0 space-y-0">
               <div className="relative h-48 sm:h-56 w-full bg-slate-900 overflow-hidden">
                 {!failedImages[detection.id] ? (
                   <img
                     src={detection.imageUrl}
                     alt={detection.title}
                     onError={() => handleImageError(detection.id)}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                     loading="lazy"
                   />
                 ) : (
@@ -357,21 +357,30 @@ export default function HomePage() {
                     <span className="text-[10px] text-rose-300 font-mono mt-0.5">{detection.sectorName}</span>
                   </div>
                 )}
-                <div className="absolute inset-0 p-4 flex flex-col justify-between pointer-events-none"
-                  style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.8) 100%)' }}>
-                  <span className="px-2.5 py-1 rounded-lg text-white font-mono font-black text-[10px] w-max pointer-events-auto" style={{ background: C.rose }}>
+                <div className="absolute inset-0 p-3.5 flex flex-col justify-between pointer-events-none"
+                  style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.85) 100%)' }}>
+                  <span className="px-2.5 py-1 rounded-lg text-white font-mono font-black text-[10px] w-max pointer-events-auto shadow-md" style={{ background: C.rose }}>
                     {detection.category.toUpperCase()}: {detection.confidence}% MATCH
                   </span>
                   <div className="p-2 rounded-xl text-[10px] font-mono flex items-center justify-between pointer-events-auto"
-                    style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                    style={{ background: 'rgba(0,0,0,0.80)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
                     <span style={{ color: C.rose }} className="font-bold">BOUNDS: {detection.boundingBox}</span>
-                    <span className="text-white/60">{detection.depth}m Depth</span>
+                    <span className="text-white/70">{detection.depth}m Depth</span>
                   </div>
                 </div>
               </div>
-              <div className="p-4 sm:p-5 space-y-1.5">
-                <h4 className="font-bold text-sm" style={{ color: 'var(--txt-primary)' }}>{detection.title}</h4>
+              <div className="p-4 sm:p-5 space-y-2">
+                <span className="text-[10px] font-mono font-bold block" style={{ color: C.rose }}>{detection.sectorName}</span>
+                <h4 className="font-bold text-sm leading-snug" style={{ color: 'var(--txt-primary)' }}>{detection.title}</h4>
                 <p className="text-xs leading-relaxed" style={{ color: 'var(--txt-secondary)' }}>{detection.details}</p>
+                <Link
+                  href="/ai-detection"
+                  className="inline-flex items-center gap-1 text-[11px] font-bold pt-1 ios-spring"
+                  style={{ color: C.rose }}
+                >
+                  <span>Inspect Neural Reticle</span>
+                  <span>→</span>
+                </Link>
               </div>
             </Card>
           ))}
