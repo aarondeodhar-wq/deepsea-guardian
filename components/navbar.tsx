@@ -1,31 +1,37 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
-  Waves, 
-  LayoutDashboard, 
-  MapPin, 
-  Eye, 
-  Fish, 
-  TrendingUp, 
-  Bell, 
-  FileText, 
-  Sun, 
-  Moon, 
-  ShieldCheck, 
-  User, 
+import {
+  Waves,
+  LayoutDashboard,
+  MapPin,
+  Eye,
+  Fish,
+  TrendingUp,
+  Bell,
+  FileText,
+  Sun,
+  Moon,
+  ShieldCheck,
+  User,
   UserPlus,
   ChevronDown,
   Mail,
   Info,
   Database,
-  Grid,
   X,
   PhoneCall,
   Activity,
-  Radio
+  Radio,
+  Satellite,
+  Zap,
+  BarChart3,
+  Search,
+  LogOut,
+  Settings,
+  ChevronRight,
 } from 'lucide-react';
 import { useTheme } from '@/lib/theme-context';
 import { useAuth, UserRole } from '@/lib/auth-context';
@@ -38,19 +44,28 @@ export const Navbar: React.FC = () => {
   const { user, isLoggedIn, logout, switchRole } = useAuth();
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [controlCenterOpen, setControlCenterOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Floating Auth Modal state
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authTab, setAuthTab] = useState<'login' | 'signup'>('login');
 
   useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 12);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
     const handleOpenAuth = () => {
       setAuthTab('login');
       setAuthModalOpen(true);
     };
-
     window.addEventListener('open-auth-modal', handleOpenAuth);
 
+    // Lock body scroll when modals open
     if (controlCenterOpen || authModalOpen) {
       document.body.style.overflow = 'hidden';
       document.documentElement.style.overflow = 'hidden';
@@ -58,6 +73,7 @@ export const Navbar: React.FC = () => {
       document.body.style.overflow = '';
       document.documentElement.style.overflow = '';
     }
+
     return () => {
       window.removeEventListener('open-auth-modal', handleOpenAuth);
       document.body.style.overflow = '';
@@ -65,192 +81,302 @@ export const Navbar: React.FC = () => {
     };
   }, [controlCenterOpen, authModalOpen]);
 
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setUserDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
   const openAuthModal = (tab: 'login' | 'signup') => {
     setAuthTab(tab);
     setAuthModalOpen(true);
   };
 
   const mainNavLinks = [
-    { href: '/', label: 'Overview', icon: Waves },
-    { href: '/dashboard', label: 'Mission Control', icon: LayoutDashboard },
-    { href: '/map', label: 'Ocean Map', icon: MapPin },
-    { href: '/predictive-map', label: 'Predictive Risk', icon: TrendingUp },
-    { href: '/ai-detection', label: 'Vision Lab', icon: Eye },
-    { href: '/biodiversity', label: 'Biodiversity', icon: Fish },
-    { href: '/datasets', label: 'Datasets', icon: Database },
+    { href: '/', label: 'Overview', icon: Waves, color: 'teal' },
+    { href: '/dashboard', label: 'Mission Control', icon: LayoutDashboard, color: 'violet' },
+    { href: '/map', label: 'Ocean Map', icon: MapPin, color: 'cyan' },
+    { href: '/predictive-map', label: 'Predictive', icon: TrendingUp, color: 'amber' },
+    { href: '/ai-detection', label: 'Vision Lab', icon: Eye, color: 'emerald' },
+    { href: '/biodiversity', label: 'Biodiversity', icon: Fish, color: 'teal' },
+    { href: '/datasets', label: 'Datasets', icon: Database, color: 'violet' },
   ];
 
   const allPageCatalog = [
-    { href: '/', label: 'Overview & Story', category: 'Main Hub', icon: Waves, desc: 'Executive environmental risk dashboard & 3D telemetry' },
-    { href: '/dashboard', label: 'Mission Control', category: 'Main Hub', icon: LayoutDashboard, desc: 'Real-time AUV fleet & water chemistry monitors' },
-    { href: '/map', label: 'Ocean GIS Map', category: 'GIS & Maps', icon: MapPin, desc: 'Google Maps Pro Satellite & depth layers' },
-    { href: '/predictive-map', label: '30-Day Risk Prediction', category: 'GIS & Maps', icon: TrendingUp, desc: 'Hydrodynamic plume dispersion model' },
-    { href: '/ai-detection', label: 'Vision Lab', category: 'Neural Vision', icon: Eye, desc: '150+ Bio-acoustic scans & extinction analytics' },
-    { href: '/biodiversity', label: 'Biodiversity Hub', category: 'Neural Vision', icon: Fish, desc: 'Endangered marine species bio-acoustics' },
-    { href: '/datasets', label: 'Datasets Center', category: 'Data & Reports', icon: Database, desc: 'Open CSV, GeoJSON, and NetCDF downloads' },
-    { href: '/digital-twin', label: 'Digital Twin AUV', category: 'Hardware', icon: Activity, desc: 'Subsea drone sensor 3D telemetry twin' },
-    { href: '/alerts', label: 'Live Smart Alerts', category: 'Response', icon: Bell, desc: 'Coast Guard & emergency alert feeds' },
-    { href: '/reports', label: 'Executive Reports', category: 'Data & Reports', icon: FileText, desc: 'Generate PDF/CSV institutional audits' },
-    { href: '/about', label: 'About Us', category: 'Institutional', icon: Info, desc: 'Platform mission, partners, and research team' },
-    { href: '/contact', label: 'Contact & Helplines', category: 'Institutional', icon: Mail, desc: '24/7 Coast Guard crisis emergency lines' },
+    { href: '/', label: 'Overview & Story', category: 'Main Hub', icon: Waves, desc: 'Executive environmental risk dashboard', color: 'teal', colorHex: '#2dd4bf' },
+    { href: '/dashboard', label: 'Mission Control', category: 'Main Hub', icon: LayoutDashboard, desc: 'Real-time AUV fleet & water chemistry', color: 'violet', colorHex: '#a78bfa' },
+    { href: '/map', label: 'Ocean GIS Map', category: 'GIS & Maps', icon: MapPin, desc: 'Satellite & depth layer mapping', color: 'cyan', colorHex: '#22d3ee' },
+    { href: '/predictive-map', label: '30-Day Risk Prediction', category: 'GIS & Maps', icon: TrendingUp, desc: 'Hydrodynamic plume dispersion model', color: 'amber', colorHex: '#fbbf24' },
+    { href: '/ai-detection', label: 'Vision Lab', category: 'Neural Vision', icon: Eye, desc: '150+ Bio-acoustic scans & extinction analytics', color: 'emerald', colorHex: '#34d399' },
+    { href: '/biodiversity', label: 'Biodiversity Hub', category: 'Neural Vision', icon: Fish, desc: 'Endangered marine species bio-acoustics', color: 'teal', colorHex: '#2dd4bf' },
+    { href: '/datasets', label: 'Datasets Center', category: 'Data & Reports', icon: Database, desc: 'Open CSV, GeoJSON, and NetCDF downloads', color: 'violet', colorHex: '#a78bfa' },
+    { href: '/digital-twin', label: 'Digital Twin AUV', category: 'Hardware', icon: Activity, desc: 'Subsea drone sensor 3D telemetry twin', color: 'rose', colorHex: '#fb7185' },
+    { href: '/alerts', label: 'Live Smart Alerts', category: 'Response', icon: Bell, desc: 'Coast Guard & emergency alert feeds', color: 'rose', colorHex: '#fb7185' },
+    { href: '/reports', label: 'Executive Reports', category: 'Data & Reports', icon: FileText, desc: 'Generate PDF/CSV institutional audits', color: 'amber', colorHex: '#fbbf24' },
+    { href: '/about', label: 'About Us', category: 'Institutional', icon: Info, desc: 'Platform mission, partners & research team', color: 'emerald', colorHex: '#34d399' },
+    { href: '/contact', label: 'Contact & Helplines', category: 'Institutional', icon: Mail, desc: '24/7 Coast Guard crisis emergency lines', color: 'rose', colorHex: '#fb7185' },
   ];
+
+  const filteredPages = searchQuery.trim()
+    ? allPageCatalog.filter(
+        (p) =>
+          p.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          p.desc.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          p.category.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : allPageCatalog;
+
+  const roleColors: Record<string, string> = {
+    Researcher: '#2dd4bf',
+    'Conservation Organization': '#34d399',
+    Administrator: '#a78bfa',
+  };
 
   return (
     <>
-      {/* Floating Auth Modal over current page */}
+      {/* Floating Auth Modal */}
       <FloatingAuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
         initialTab={authTab}
       />
 
-      {/* DYNAMIC TELEMETRY STATUS BAR (DESKTOP & TABLET) */}
-      <div className="w-full bg-slate-900 text-white text-[11px] font-mono py-1.5 px-4 border-b border-slate-800 hidden md:flex items-center justify-between overflow-x-hidden">
-        <div className="flex items-center gap-4 max-w-7xl mx-auto w-full justify-between">
-          <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1.5 text-emerald-400 font-bold">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-              AUV Swarm Active
-            </span>
-            <span className="text-slate-400">|</span>
-            <span className="text-slate-300">Mariana Trench (10,920m)</span>
-            <span className="text-slate-400">|</span>
-            <span className="text-slate-200">pH 8.12 (Normal)</span>
-          </div>
+      {/* ─── STICKY WRAPPER: Telemetry bar + Nav stuck together at top ─── */}
+      <div className="sticky top-0 z-40 w-full flex flex-col overflow-x-hidden">
 
-          <div className="flex items-center gap-3">
-            <span className="text-amber-300 font-bold">14 Threat Interceptions Today</span>
-            <span className="text-slate-400">|</span>
-            <span className="text-slate-300">Satellite SAR Relay: Active ✓</span>
-          </div>
+      {/* ─── TELEMETRY STATUS TICKER ─── */}
+      <div className="w-full text-[11px] font-mono py-1.5 px-4 hidden md:flex items-center justify-between overflow-hidden" style={{ background: '#04080f', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+        <div className="flex items-center gap-4">
+          <span className="flex items-center gap-1.5 font-bold" style={{ color: '#2dd4bf' }}>
+            <span className="w-1.5 h-1.5 rounded-full bg-current animate-ping inline-block" />
+            AUV Swarm Online
+          </span>
+          <span className="text-white/20">│</span>
+          <span className="text-white/50">Mariana Trench · 10,920m depth</span>
+          <span className="text-white/20">│</span>
+          <span className="text-white/70">pH 8.12 · Temp 1.8°C</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <span style={{ color: '#fbbf24' }} className="font-bold">
+            14 Threats Intercepted Today
+          </span>
+          <span className="text-white/20">│</span>
+          <span className="text-white/50">SAR Satellite Relay: Active ✓</span>
         </div>
       </div>
 
-      {/* MAIN NAVBAR - FULLY RESPONSIVE NO-OVERFLOW MOBILE HEADER */}
-      <header className="sticky top-0 z-40 w-full glass-panel border-b border-slate-300 dark:border-slate-800 backdrop-blur-3xl overflow-x-hidden">
+      {/* ─── MAIN NAVBAR ─── */}
+      <header
+        className={`w-full overflow-x-hidden transition-all duration-300 ${
+          scrolled
+            ? 'glass-panel border-b border-white/10 shadow-xl'
+            : 'bg-[#06090f]/90 backdrop-blur-xl border-b border-white/5'
+        }`}
+      >
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-2">
-          
-          {/* Brand Logo & Name */}
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl sm:rounded-2xl bg-slate-800 text-white flex items-center justify-center border border-slate-700 shadow-sm">
-              <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
+
+          {/* Brand Logo */}
+          <Link href="/" className="flex items-center gap-2 shrink-0 ios-spring">
+            <div
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-2xl flex items-center justify-center shadow-lg"
+              style={{ background: 'linear-gradient(135deg, #0f2027, #203a43, #2c5364)', border: '1px solid rgba(45,212,191,0.2)' }}
+            >
+              <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#2dd4bf' }} />
             </div>
-            <span className="font-extrabold text-sm sm:text-base tracking-wide text-slate-900 dark:text-white">
-              DEEPSEA <span className="text-slate-600 dark:text-slate-300">GUARDIAN</span>
-            </span>
+            <div className="hidden sm:flex flex-col leading-none">
+              <span className="font-black text-sm tracking-wider text-white">DEEPSEA</span>
+              <span className="font-bold text-[10px] tracking-widest" style={{ color: '#2dd4bf' }}>GUARDIAN</span>
+            </div>
           </Link>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1 py-1">
+          {/* Desktop Nav Links */}
+          <nav className="hidden lg:flex items-center gap-0.5">
             {mainNavLinks.map((link) => {
               const Icon = link.icon;
               const isActive = pathname === link.href;
+              const colorMap: Record<string, string> = {
+                teal: '#2dd4bf', violet: '#a78bfa', cyan: '#22d3ee',
+                amber: '#fbbf24', emerald: '#34d399', rose: '#fb7185',
+              };
+              const c = colorMap[link.color] || '#2dd4bf';
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap ios-spring ${
                     isActive
-                      ? 'bg-slate-800 text-white border border-slate-700 shadow-sm'
-                      : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-slate-800/60'
+                      ? 'text-white'
+                      : 'text-white/50 hover:text-white/90'
                   }`}
+                  style={
+                    isActive
+                      ? {
+                          background: `linear-gradient(135deg, ${c}20, ${c}10)`,
+                          border: `1px solid ${c}30`,
+                          boxShadow: `0 0 12px ${c}20`,
+                        }
+                      : {}
+                  }
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-slate-200' : 'text-slate-500 dark:text-slate-400'}`} />
+                  <Icon
+                    className="w-3.5 h-3.5"
+                    style={{ color: isActive ? c : undefined }}
+                  />
                   <span>{link.label}</span>
                 </Link>
               );
             })}
           </nav>
 
-          {/* Right Side Controls */}
+          {/* Right Controls */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            
-            {/* Control Center Button (Desktop) */}
+
+            {/* Control Center Button */}
             <button
               onClick={() => setControlCenterOpen(true)}
-              className="hidden sm:flex px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs shadow-sm transition-all items-center gap-1.5 border border-slate-700"
-              title="Open Navigation Menu"
+              className="hidden sm:flex px-3 py-1.5 rounded-xl font-bold text-xs items-center gap-1.5 ios-spring"
+              style={{
+                background: 'rgba(45,212,191,0.1)',
+                border: '1px solid rgba(45,212,191,0.2)',
+                color: '#2dd4bf',
+              }}
             >
-              <Grid className="w-4 h-4 text-slate-300" />
+              <Satellite className="w-3.5 h-3.5" />
               <span>Control Center</span>
             </button>
 
-            {/* Notification Center */}
+            {/* Notifications */}
             <NotificationCenter />
 
-            {/* Day / Night Theme Switcher */}
+            {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-1.5 sm:p-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 transition-all flex items-center justify-center"
-              title={`Switch to ${theme === 'dark' ? 'Day Mode' : 'Night Mode'}`}
+              className="p-2 rounded-xl ios-bubble"
+              style={{
+                background: theme === 'dark' ? 'rgba(251,191,36,0.1)' : 'rgba(100,116,139,0.1)',
+                border: `1px solid ${theme === 'dark' ? 'rgba(251,191,36,0.2)' : 'rgba(100,116,139,0.2)'}`,
+              }}
+              title={`Switch to ${theme === 'dark' ? 'Day' : 'Night'} Mode`}
             >
               {theme === 'dark' ? (
-                <Sun className="w-4 h-4 text-amber-400" />
+                <Sun className="w-4 h-4" style={{ color: '#fbbf24' }} />
               ) : (
-                <Moon className="w-4 h-4 text-slate-700" />
+                <Moon className="w-4 h-4 text-slate-600" />
               )}
             </button>
 
-            {/* User Profile or Auth Trigger */}
+            {/* User Profile / Auth */}
             {isLoggedIn && user ? (
-              <div className="relative">
+              <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="flex items-center gap-1.5 p-1 sm:px-3 sm:py-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs text-slate-900 dark:text-white"
+                  className="flex items-center gap-1.5 px-2 py-1 rounded-2xl ios-spring"
+                  style={{
+                    background: 'rgba(167,139,250,0.1)',
+                    border: '1px solid rgba(167,139,250,0.2)',
+                  }}
                 >
-                  <img
-                    src={user.avatar}
-                    alt={user.name}
-                    className="w-6 h-6 rounded-full object-cover border border-slate-500"
-                  />
-                  <span className="font-bold hidden md:inline truncate max-w-[80px]">
+                  <div
+                    className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black"
+                    style={{
+                      background: `linear-gradient(135deg, ${roleColors[user.role] || '#a78bfa'}30, ${roleColors[user.role] || '#a78bfa'}15)`,
+                      border: `1.5px solid ${roleColors[user.role] || '#a78bfa'}40`,
+                      color: roleColors[user.role] || '#a78bfa',
+                    }}
+                  >
+                    {user.name.charAt(0)}
+                  </div>
+                  <span className="font-bold text-xs hidden md:inline text-white/80 max-w-[70px] truncate">
                     {user.name.split(' ')[0]}
                   </span>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden sm:inline" />
+                  <ChevronDown className="w-3 h-3 text-white/30 hidden sm:inline" />
                 </button>
 
+                {/* User Dropdown */}
                 {userDropdownOpen && (
-                  <div 
-                    className="absolute right-0 mt-2 w-60 rounded-2xl glass-panel p-3 border border-slate-300 dark:border-slate-700 shadow-xl z-50 text-xs"
-                    onMouseLeave={() => setUserDropdownOpen(false)}
+                  <div
+                    className="absolute right-0 mt-2 w-64 rounded-2xl p-3 z-50 animate-slide-in"
+                    style={{
+                      background: 'rgba(10, 15, 28, 0.95)',
+                      backdropFilter: 'blur(40px)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      boxShadow: '0 24px 60px rgba(0,0,0,0.6), 0 8px 20px rgba(0,0,0,0.4)',
+                    }}
                   >
-                    <div className="p-2 border-b border-slate-200 dark:border-slate-700/50">
-                      <p className="font-bold text-slate-900 dark:text-white">{user.name}</p>
-                      <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">{user.email}</p>
-                    </div>
-
-                    <div className="py-2 space-y-1">
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">Role</p>
-                      {(['Researcher', 'Conservation Organization', 'Administrator'] as UserRole[]).map((r) => (
-                        <button
-                          key={r}
-                          onClick={() => {
-                            switchRole(r);
-                            setUserDropdownOpen(false);
+                    {/* Profile Header */}
+                    <div className="p-2 mb-2">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-10 h-10 rounded-2xl flex items-center justify-center font-black text-lg"
+                          style={{
+                            background: `linear-gradient(135deg, ${roleColors[user.role] || '#a78bfa'}25, ${roleColors[user.role] || '#a78bfa'}10)`,
+                            border: `1.5px solid ${roleColors[user.role] || '#a78bfa'}35`,
+                            color: roleColors[user.role] || '#a78bfa',
                           }}
-                          className={`w-full text-left px-2 py-1.5 text-xs rounded-lg flex items-center justify-between ${
-                            user.role === r
-                              ? 'bg-slate-800 text-white font-bold'
-                              : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
-                          }`}
                         >
-                          <span>{r}</span>
-                          {user.role === r && <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />}
-                        </button>
-                      ))}
+                          {user.name.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="font-bold text-sm text-white">{user.name}</p>
+                          <p className="text-[10px] text-white/40 truncate max-w-[140px]">{user.email}</p>
+                        </div>
+                      </div>
+                      <div className="mt-2">
+                        <span
+                          className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                          style={{
+                            background: `${roleColors[user.role] || '#a78bfa'}20`,
+                            color: roleColors[user.role] || '#a78bfa',
+                            border: `1px solid ${roleColors[user.role] || '#a78bfa'}30`,
+                          }}
+                        >
+                          {user.role}
+                        </span>
+                      </div>
                     </div>
 
-                    <div className="pt-2 border-t border-slate-200 dark:border-slate-700/50">
+                    <div className="h-px bg-white/5 mb-2" />
+
+                    {/* Role Switcher */}
+                    <p className="text-[9px] font-black text-white/30 uppercase tracking-widest px-2 mb-1">
+                      Switch Role
+                    </p>
+                    {(['Researcher', 'Conservation Organization', 'Administrator'] as UserRole[]).map((r) => (
                       <button
-                        onClick={() => {
-                          logout();
-                          setUserDropdownOpen(false);
-                        }}
-                        className="w-full text-left px-2 py-1.5 text-xs text-rose-600 hover:bg-rose-500/10 rounded-lg font-bold"
+                        key={r}
+                        onClick={() => { switchRole(r); setUserDropdownOpen(false); }}
+                        className="w-full text-left px-2.5 py-2 text-xs rounded-xl flex items-center justify-between ios-spring mb-0.5"
+                        style={
+                          user.role === r
+                            ? {
+                                background: `${roleColors[r]}15`,
+                                border: `1px solid ${roleColors[r]}25`,
+                                color: roleColors[r],
+                              }
+                            : { color: 'rgba(255,255,255,0.5)' }
+                        }
                       >
-                        Sign Out
+                        <span className="font-semibold">{r}</span>
+                        {user.role === r && (
+                          <ShieldCheck className="w-3.5 h-3.5" style={{ color: roleColors[r] }} />
+                        )}
                       </button>
-                    </div>
+                    ))}
+
+                    <div className="h-px bg-white/5 my-2" />
+
+                    <button
+                      onClick={() => { logout(); setUserDropdownOpen(false); }}
+                      className="w-full text-left px-2.5 py-2 text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl font-bold flex items-center gap-2 ios-spring"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                      <span>Sign Out</span>
+                    </button>
                   </div>
                 )}
               </div>
@@ -258,144 +384,215 @@ export const Navbar: React.FC = () => {
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => openAuthModal('login')}
-                  className="px-2.5 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white font-bold text-xs hover:bg-slate-300 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 transition-all flex items-center gap-1"
+                  className="px-3 py-1.5 rounded-xl font-bold text-xs ios-spring"
+                  style={{
+                    background: 'rgba(255,255,255,0.06)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    color: 'rgba(255,255,255,0.75)',
+                  }}
                 >
-                  <User className="w-3.5 h-3.5 text-slate-500" />
                   <span className="hidden sm:inline">Log In</span>
+                  <User className="w-3.5 h-3.5 sm:hidden" />
                 </button>
-
                 <button
                   onClick={() => openAuthModal('signup')}
-                  className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs shadow-md border border-slate-700 transition-all flex items-center gap-1"
+                  className="px-3 py-1.5 rounded-xl font-bold text-xs ios-spring text-[#0d1117]"
+                  style={{
+                    background: 'linear-gradient(135deg, #2dd4bf, #06b6d4)',
+                    boxShadow: '0 4px 14px rgba(45,212,191,0.3)',
+                  }}
                 >
-                  <UserPlus className="w-3.5 h-3.5 text-slate-300" />
                   <span className="hidden sm:inline">Sign Up</span>
+                  <UserPlus className="w-3.5 h-3.5 sm:hidden" />
                 </button>
               </div>
             )}
-
           </div>
         </div>
       </header>
 
-      {/* PLATFORM CONTROL CENTER OVERLAY MODAL */}
+      </div>{/* end sticky wrapper */}
+
+      {/* ─── CONTROL CENTER MODAL ─── */}
       {controlCenterOpen && (
-        <div className="fixed inset-0 z-50 bg-[#141b24]/90 backdrop-blur-2xl p-4 sm:p-8 flex flex-col justify-between overflow-y-auto animate-in fade-in">
-          
-          <div className="flex items-center justify-between max-w-6xl mx-auto w-full pb-4 border-b border-slate-800">
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-2xl bg-slate-800 text-white border border-slate-700 shadow-md">
-                <Grid className="w-6 h-6 text-slate-300" />
-              </div>
-              <div>
-                <h2 className="text-lg sm:text-xl font-extrabold text-white tracking-wide">Platform Control Center</h2>
-                <p className="text-xs text-slate-400 font-mono">Access all 12 platform modules & emergency helplines</p>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setControlCenterOpen(false)}
-              className="p-2 rounded-2xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors"
-            >
-              <X className="w-6 h-6" />
-            </button>
-          </div>
-
-          <div className="max-w-6xl mx-auto w-full my-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {allPageCatalog.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setControlCenterOpen(false)}
-                  className="p-4 sm:p-5 rounded-3xl bg-slate-900/90 border border-slate-800 hover:border-slate-600 hover:bg-slate-800/90 transition-all flex items-start gap-4 group shadow-xl"
+        <div
+          className="fixed inset-0 z-50 flex flex-col modal-overlay"
+          onClick={(e) => { if (e.target === e.currentTarget) setControlCenterOpen(false); }}
+        >
+          <div
+            className="w-full h-full overflow-y-auto"
+            style={{ padding: '24px 16px 80px' }}
+          >
+            {/* Header */}
+            <div className="max-w-5xl mx-auto flex items-center justify-between mb-8 animate-slide-up">
+              <div className="flex items-center gap-4">
+                <div
+                  className="w-11 h-11 rounded-2xl flex items-center justify-center"
+                  style={{
+                    background: 'linear-gradient(135deg, #2dd4bf20, #06b6d420)',
+                    border: '1px solid rgba(45,212,191,0.25)',
+                    boxShadow: '0 0 20px rgba(45,212,191,0.15)',
+                  }}
                 >
-                  <div className="p-3 rounded-2xl bg-slate-800 text-slate-300 group-hover:bg-slate-700 group-hover:text-white transition-all shrink-0 border border-slate-700">
-                    <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-mono font-extrabold text-slate-400 uppercase tracking-wider block mb-0.5">
-                      {item.category}
-                    </span>
-                    <h3 className="font-extrabold text-sm sm:text-base text-white group-hover:text-slate-200 transition-colors">
-                      {item.label}
-                    </h3>
-                    <p className="text-xs text-slate-300 font-medium mt-1 leading-relaxed">{item.desc}</p>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
+                  <Satellite className="w-5 h-5" style={{ color: '#2dd4bf' }} />
+                </div>
+                <div>
+                  <h2 className="text-xl font-black text-white tracking-tight">Platform Control Center</h2>
+                  <p className="text-xs text-white/40 font-mono mt-0.5">12 modules · All ocean systems</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setControlCenterOpen(false)}
+                className="p-2.5 rounded-2xl ios-bubble"
+                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}
+              >
+                <X className="w-5 h-5 text-white/60" />
+              </button>
+            </div>
 
-          <div className="max-w-6xl mx-auto w-full p-4 rounded-3xl bg-rose-500/10 border border-rose-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs shadow-lg">
-            <div className="flex items-center gap-3">
-              <PhoneCall className="w-5 h-5 text-rose-400 shrink-0 animate-pulse" />
-              <div>
-                <span className="font-bold text-white text-sm block">24/7 Coast Guard Emergency Pollution Line</span>
-                <span className="text-rose-300 font-mono font-bold">+1 (800) 424-8802 • Immediate Subsea Interventions</span>
+            {/* Search */}
+            <div className="max-w-5xl mx-auto mb-6 animate-slide-up" style={{ animationDelay: '0.05s' }}>
+              <div
+                className="flex items-center gap-3 px-4 py-3 rounded-2xl"
+                style={{
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.07)',
+                  backdropFilter: 'blur(20px)',
+                }}
+              >
+                <Search className="w-4 h-4 text-white/30" />
+                <input
+                  type="text"
+                  placeholder="Search modules..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="bg-transparent text-sm text-white/80 placeholder-white/25 outline-none flex-1 font-medium"
+                />
               </div>
             </div>
-            <Link
-              href="/contact"
-              onClick={() => setControlCenterOpen(false)}
-              className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold whitespace-nowrap shadow-md"
-            >
-              Contact Helplines →
-            </Link>
-          </div>
 
+            {/* Module Grid */}
+            <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-8">
+              {filteredPages.map((item, idx) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setControlCenterOpen(false)}
+                    className="p-4 sm:p-5 rounded-2xl flex items-start gap-4 ios-float animate-slide-up group"
+                    style={{
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1px solid rgba(255,255,255,0.06)',
+                      backdropFilter: 'blur(20px)',
+                      animationDelay: `${0.05 + idx * 0.03}s`,
+                    }}
+                  >
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300"
+                      style={{
+                        background: `${item.colorHex}15`,
+                        border: `1px solid ${item.colorHex}25`,
+                      }}
+                    >
+                      <Icon className="w-5 h-5" style={{ color: item.colorHex }} />
+                    </div>
+                    <div className="min-w-0">
+                      <span
+                        className="text-[9px] font-black uppercase tracking-widest block mb-0.5"
+                        style={{ color: item.colorHex, opacity: 0.7 }}
+                      >
+                        {item.category}
+                      </span>
+                      <h3 className="font-bold text-sm text-white/90 group-hover:text-white transition-colors truncate">
+                        {item.label}
+                      </h3>
+                      <p className="text-[11px] text-white/35 mt-0.5 leading-relaxed line-clamp-2">
+                        {item.desc}
+                      </p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-white/20 shrink-0 mt-1 group-hover:text-white/50 transition-colors" />
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* Emergency Bar */}
+            <div
+              className="max-w-5xl mx-auto p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 animate-slide-up"
+              style={{
+                background: 'rgba(251,113,133,0.06)',
+                border: '1px solid rgba(251,113,133,0.15)',
+                animationDelay: '0.4s',
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <PhoneCall className="w-5 h-5 animate-pulse" style={{ color: '#fb7185' }} />
+                <div>
+                  <span className="font-bold text-white text-sm block">24/7 Coast Guard Emergency</span>
+                  <span className="text-xs font-mono font-bold" style={{ color: '#fb7185' }}>
+                    +1 (800) 424-8802 · Immediate Subsea Intervention
+                  </span>
+                </div>
+              </div>
+              <Link
+                href="/contact"
+                onClick={() => setControlCenterOpen(false)}
+                className="px-5 py-2.5 rounded-xl font-bold text-xs ios-spring whitespace-nowrap"
+                style={{
+                  background: 'rgba(251,113,133,0.15)',
+                  border: '1px solid rgba(251,113,133,0.25)',
+                  color: '#fb7185',
+                }}
+              >
+                All Helplines →
+              </Link>
+            </div>
+          </div>
         </div>
       )}
 
-      {/* MOBILE BOTTOM FLOATING NAVIGATION DOCK - PERFECT FIT & NO OVERLAP */}
-      <div className="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 lg:hidden w-[94vw] max-w-md rounded-full bg-slate-900/95 backdrop-blur-2xl border border-slate-700 p-1.5 shadow-2xl flex items-center justify-around text-white">
-        <Link
-          href="/"
-          className={`p-2 rounded-full flex flex-col items-center text-[10px] font-bold transition-all ${
-            pathname === '/' ? 'text-white bg-slate-800 border border-slate-700' : 'text-slate-400'
-          }`}
-        >
-          <ShieldCheck className="w-4 h-4 text-emerald-400" />
-          <span>Home</span>
-        </Link>
-
-        <Link
-          href="/map"
-          className={`p-2 rounded-full flex flex-col items-center text-[10px] font-bold transition-all ${
-            pathname === '/map' ? 'text-white bg-slate-800 border border-slate-700' : 'text-slate-400'
-          }`}
-        >
-          <MapPin className="w-4 h-4" />
-          <span>Map</span>
-        </Link>
-
-        <Link
-          href="/ai-detection"
-          className={`p-2 rounded-full flex flex-col items-center text-[10px] font-bold transition-all ${
-            pathname === '/ai-detection' ? 'text-white bg-slate-800 border border-slate-700' : 'text-slate-400'
-          }`}
-        >
-          <Eye className="w-4 h-4" />
-          <span>Vision</span>
-        </Link>
-
-        <Link
-          href="/datasets"
-          className={`p-2 rounded-full flex flex-col items-center text-[10px] font-bold transition-all ${
-            pathname === '/datasets' ? 'text-white bg-slate-800 border border-slate-700' : 'text-slate-400'
-          }`}
-        >
-          <Database className="w-4 h-4" />
-          <span>Datasets</span>
-        </Link>
-
+      {/* ─── MOBILE BOTTOM DOCK ─── */}
+      <div
+        className="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 lg:hidden w-[92vw] max-w-sm rounded-full p-1.5 flex items-center justify-around"
+        style={{
+          background: 'rgba(8, 14, 26, 0.92)',
+          backdropFilter: 'blur(40px)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          boxShadow: '0 12px 40px rgba(0,0,0,0.6), 0 4px 12px rgba(0,0,0,0.4)',
+        }}
+      >
+        {[
+          { href: '/', icon: ShieldCheck, label: 'Home', color: '#2dd4bf' },
+          { href: '/map', icon: MapPin, label: 'Map', color: '#22d3ee' },
+          { href: '/ai-detection', icon: Eye, label: 'Vision', color: '#34d399' },
+          { href: '/datasets', icon: Database, label: 'Data', color: '#a78bfa' },
+        ].map(({ href, icon: Icon, label, color }) => {
+          const isActive = pathname === href;
+          return (
+            <Link
+              key={href}
+              href={href}
+              className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-full ios-bubble"
+              style={isActive ? { background: `${color}15`, border: `1px solid ${color}25` } : {}}
+            >
+              <Icon className="w-4 h-4" style={{ color: isActive ? color : 'rgba(255,255,255,0.35)' }} />
+              <span
+                className="text-[9px] font-bold"
+                style={{ color: isActive ? color : 'rgba(255,255,255,0.3)' }}
+              >
+                {label}
+              </span>
+            </Link>
+          );
+        })}
         <button
           onClick={() => setControlCenterOpen(true)}
-          className="p-2 rounded-full flex flex-col items-center text-[10px] font-bold text-white bg-slate-800 border border-slate-700"
+          className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-full ios-bubble"
+          style={{ background: 'rgba(45,212,191,0.12)', border: '1px solid rgba(45,212,191,0.2)' }}
         >
-          <Grid className="w-4 h-4" />
-          <span>Menu</span>
+          <Satellite className="w-4 h-4" style={{ color: '#2dd4bf' }} />
+          <span className="text-[9px] font-bold" style={{ color: '#2dd4bf' }}>Hub</span>
         </button>
       </div>
     </>

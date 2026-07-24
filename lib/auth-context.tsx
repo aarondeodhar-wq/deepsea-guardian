@@ -23,32 +23,42 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<UserProfile | null>({
-    name: 'Dr. Elena Rostova',
-    email: 'elena.rostova@ocean-guardians.org',
-    role: 'Researcher',
-    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80',
-    organization: 'Deep Ocean Conservation Initiative'
-  });
+  // Start as null — user must explicitly sign in
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // Only restore from localStorage — no default user
     const savedUser = localStorage.getItem('deepsea_user');
     if (savedUser) {
       try {
         setUser(JSON.parse(savedUser));
       } catch (e) {
         console.error('Failed to parse saved user state', e);
+        localStorage.removeItem('deepsea_user');
       }
     }
+    setMounted(true);
   }, []);
 
   const login = (email: string, role: UserRole) => {
+    const firstName = email.split('@')[0].replace(/[._]/g, ' ');
+    const formattedName = firstName
+      .split(' ')
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(' ');
+
     const newUser: UserProfile = {
-      name: email.split('@')[0].replace('.', ' ').toUpperCase() || 'Commander Sea',
+      name: formattedName || 'Ocean Researcher',
       email,
       role,
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
-      organization: role === 'Administrator' ? 'Global Ocean Security HQ' : 'Oceanic Research Alliance'
+      avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(formattedName)}&backgroundColor=0f172a&textColor=64ffda`,
+      organization:
+        role === 'Administrator'
+          ? 'Global Ocean Security HQ'
+          : role === 'Conservation Organization'
+          ? 'Ocean Conservation Alliance'
+          : 'Oceanic Research Initiative',
     };
     setUser(newUser);
     localStorage.setItem('deepsea_user', JSON.stringify(newUser));
@@ -66,6 +76,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem('deepsea_user', JSON.stringify(updated));
     }
   };
+
+  // Prevent SSR mismatch
+  if (!mounted) {
+    return (
+      <AuthContext.Provider value={{ user: null, isLoggedIn: false, login, logout, switchRole }}>
+        {children}
+      </AuthContext.Provider>
+    );
+  }
 
   return (
     <AuthContext.Provider value={{ user, isLoggedIn: !!user, login, logout, switchRole }}>
