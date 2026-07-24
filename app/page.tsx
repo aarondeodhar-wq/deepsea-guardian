@@ -120,12 +120,12 @@ export default function HomePage() {
   ];
 
   const emergencyHotlines = [
-    { agency: 'US Coast Guard Command', number: '+1 (800) 424-8802', region: 'Americas & Atlantic', flag: '🇺🇸' },
-    { agency: 'UN Environment Program', number: '+41 22 917 8111', region: 'Global Marine Crisis', flag: '🌐' },
-    { agency: 'EMSA European Safety Agency', number: '+351 21 120 9200', region: 'Europe & Med', flag: '🇪🇺' },
-    { agency: 'AMSA Maritime Safety Authority', number: '+61 2 6279 5000', region: 'Indo-Pacific & Reefs', flag: '🇦🇺' },
-    { agency: 'Japan Coast Guard Crisis Line', number: '+81 3 3591 6361', region: 'Pacific Trench Sector', flag: '🇯🇵' },
-    { agency: 'UK Maritime & Coastguard', number: '+44 20 3817 2000', region: 'North Sea & Ridge', flag: '🇬🇧' },
+    { agency: 'US Coast Guard Command', number: '+1 (800) 424-8802', region: 'Americas & Atlantic', code: 'US Command' },
+    { agency: 'UN Environment Program', number: '+41 22 917 8111', region: 'Global Marine Crisis', code: 'UN Global' },
+    { agency: 'EMSA European Safety Agency', number: '+351 21 120 9200', region: 'Europe & Med', code: 'EU Safety' },
+    { agency: 'AMSA Maritime Safety Authority', number: '+61 2 6279 5000', region: 'Indo-Pacific & Reefs', code: 'AU Pacific' },
+    { agency: 'Japan Coast Guard Crisis Line', number: '+81 3 3591 6361', region: 'Pacific Trench Sector', code: 'JP Trench' },
+    { agency: 'UK Maritime & Coastguard', number: '+44 20 3817 2000', region: 'North Sea & Ridge', code: 'UK Agency' },
   ];
 
   return (
@@ -437,7 +437,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* SECTION 5: EXPANDED 24/7 INTERNATIONAL MARITIME EMERGENCY HELPLINES & NUMBERS */}
+      {/* SECTION 5: EXPANDED MATTE SLATE EMERGENCY HELPLINES */}
       <section className="w-full">
         <div className="p-6 sm:p-10 rounded-3xl bg-slate-900 text-white space-y-8 shadow-2xl border border-slate-800">
           
@@ -460,7 +460,7 @@ export default function HomePage() {
 
             <Link
               href="/contact"
-              className="px-6 py-3 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-lg transition-all shrink-0"
+              className="px-6 py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 shadow-md transition-all shrink-0"
             >
               Contact Full Incident Desk →
             </Link>
@@ -473,39 +473,41 @@ export default function HomePage() {
             </div>
           )}
 
-          {/* 6 INTERNATIONAL HOTLINE NUMBERS GRID */}
+          {/* 6 INTERNATIONAL HOTLINE NUMBERS GRID (MATTE SLATE STYLING) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {emergencyHotlines.map((hotline, idx) => (
               <div
                 key={idx}
-                className="p-4.5 rounded-2xl bg-slate-950 border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between space-y-3"
+                className="p-5 rounded-3xl bg-slate-950/90 border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between space-y-4 shadow-lg"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-lg">{hotline.flag}</span>
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-800">
+                  <span className="text-[10px] font-mono font-extrabold px-2.5 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700">
+                    {hotline.code}
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-400">
                     {hotline.region}
                   </span>
                 </div>
 
                 <div>
-                  <h4 className="font-bold text-xs text-white">{hotline.agency}</h4>
-                  <span className="font-mono text-sm sm:text-base font-extrabold text-rose-400 block mt-1">
+                  <h4 className="font-bold text-xs text-slate-200">{hotline.agency}</h4>
+                  <span className="font-mono text-base sm:text-lg font-extrabold text-rose-400 block mt-1">
                     {hotline.number}
                   </span>
                 </div>
 
-                <div className="pt-2 border-t border-slate-900 flex items-center justify-between gap-2">
+                <div className="pt-3 border-t border-slate-900 flex items-center justify-between gap-2">
                   <a
                     href={`tel:${hotline.number.replace(/[^0-9+]/g, '')}`}
-                    className="flex-1 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-[11px] transition-all text-center flex items-center justify-center gap-1.5"
+                    className="flex-1 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-all border border-slate-700 text-center flex items-center justify-center gap-1.5"
                   >
-                    <Phone className="w-3.5 h-3.5" />
+                    <Phone className="w-3.5 h-3.5 text-rose-400" />
                     <span>Call Hotline</span>
                   </a>
 
                   <button
                     onClick={() => handleCopyNumber(hotline.number, hotline.agency)}
-                    className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all border border-slate-700"
+                    className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all border border-slate-700"
                     title="Copy Phone Number"
                   >
                     <Copy className="w-3.5 h-3.5" />
