@@ -567,7 +567,7 @@ export const aiDetections: AIDetection[] = [
     timestamp: 'Today, 06:18 UTC',
     coordinates: [-58.42, -64.14],
     depth: 3900,
-    imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80',
     details: 'Extensive mineral plume choking benthic vent communities in Antarctic Basin.',
     sectorName: 'Sector 6 - Southern Ocean Antarctic Basin',
     oceanBasin: 'Southern Ocean',
