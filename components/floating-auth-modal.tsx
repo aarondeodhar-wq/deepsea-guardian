@@ -59,6 +59,16 @@ export const FloatingAuthModal: React.FC<Props> = ({ isOpen, onClose, initialTab
     return () => document.removeEventListener('keydown', handleKey);
   }, [isOpen, onClose]);
 
+  // Lock body scroll while modal open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
@@ -120,19 +130,22 @@ export const FloatingAuthModal: React.FC<Props> = ({ isOpen, onClose, initialTab
   const inputFocusStyle = `focus:ring-2 focus:ring-teal-400/20`;
 
   return (
+    // z-[100] ensures it sits above navbar (z-40) and chatbox (z-60)
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center p-4 modal-overlay"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+      style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
         ref={modalRef}
-        className="w-full max-w-md rounded-3xl relative overflow-hidden animate-bubble"
+        className="w-full max-w-md rounded-3xl relative animate-bubble"
         style={{
-          background: 'rgba(8, 14, 26, 0.9)',
+          background: 'rgba(8, 14, 26, 0.95)',
           backdropFilter: 'blur(60px) saturate(200%)',
           WebkitBackdropFilter: 'blur(60px) saturate(200%)',
-          border: '1px solid rgba(255,255,255,0.08)',
-          boxShadow: '0 32px 80px rgba(0,0,0,0.7), 0 8px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)',
+          border: '1px solid rgba(255,255,255,0.10)',
+          boxShadow: '0 32px 80px rgba(0,0,0,0.7), 0 8px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)',
+          overflow: 'visible',
         }}
       >
         {/* Ambient gradient top-left */}
@@ -152,15 +165,17 @@ export const FloatingAuthModal: React.FC<Props> = ({ isOpen, onClose, initialTab
           }}
         />
 
-        {/* Close button */}
+        {/* Close button — outside overflow container so it's never clipped */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center ios-bubble z-10"
-          style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}
+          aria-label="Close sign in modal"
+          className="absolute -top-3 -right-3 w-9 h-9 rounded-full flex items-center justify-center ios-bubble z-20 shadow-xl"
+          style={{ background: 'rgba(251,113,133,0.15)', border: '1px solid rgba(251,113,133,0.25)', color: '#fb7185' }}
         >
-          <X className="w-4 h-4 text-white/50" />
+          <X className="w-4 h-4" />
         </button>
 
+        <div className="rounded-3xl overflow-hidden">
         <div className="p-7 relative z-10">
 
           {/* Header */}
@@ -529,6 +544,7 @@ export const FloatingAuthModal: React.FC<Props> = ({ isOpen, onClose, initialTab
             ))}
           </div>
         </div>
+        </div>{/* end rounded-3xl overflow-hidden */}
       </div>
     </div>
   );

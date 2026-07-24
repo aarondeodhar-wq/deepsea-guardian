@@ -60,7 +60,7 @@ const C = {
   sky:     '#38bdf8',
 };
 
-/* ─── Section wrapper — TRUE glassmorphism ─── */
+/* ─── Section wrapper — adapts light + dark ─── */
 function Section({
   children,
   accent = C.teal,
@@ -72,14 +72,10 @@ function Section({
 }) {
   return (
     <section
-      className={`p-6 sm:p-10 rounded-3xl space-y-6 ${className}`}
+      className={`p-6 sm:p-10 rounded-3xl space-y-6 glass-panel ${className}`}
       style={{
-        // Transparent so background orbs show through
-        background: `linear-gradient(145deg, rgba(4,8,20,0.55) 0%, rgba(8,14,28,0.50) 100%)`,
-        backdropFilter: 'blur(32px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(32px) saturate(180%)',
-        border: `1px solid ${accent}22`,
-        boxShadow: `0 8px 48px rgba(0,0,0,0.5), 0 1px 0 ${accent}15 inset, 0 -1px 0 rgba(0,0,0,0.3) inset`,
+        border: `1px solid ${accent}20`,
+        boxShadow: `0 8px 40px rgba(0,0,0,0.15), inset 0 1px 0 ${accent}12`,
       }}
     >
       {children}
@@ -87,7 +83,7 @@ function Section({
   );
 }
 
-/* ─── Inner card — frosted glass tier 2 ─── */
+/* ─── Inner card — adapts light + dark ─── */
 function Card({
   children,
   accent = C.teal,
@@ -101,13 +97,10 @@ function Card({
 }) {
   return (
     <div
-      className={`rounded-2xl p-5 ${hover ? 'ios-float' : ''} ${className}`}
+      className={`rounded-2xl p-5 glass-card ${hover ? 'ios-float' : ''} ${className}`}
       style={{
-        background: `rgba(6,12,24,0.55)`,
-        backdropFilter: 'blur(20px) saturate(160%)',
-        WebkitBackdropFilter: 'blur(20px) saturate(160%)',
-        border: `1px solid ${accent}1a`,
-        boxShadow: `0 4px 24px rgba(0,0,0,0.35), inset 0 1px 0 ${accent}10`,
+        border: `1px solid ${accent}18`,
+        boxShadow: `0 2px 12px rgba(0,0,0,0.08), inset 0 1px 0 ${accent}08`,
       }}
     >
       {children}

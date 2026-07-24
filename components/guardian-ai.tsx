@@ -1,8 +1,12 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Bot, X, Send, Sparkles, RefreshCw, Volume2, VolumeX, ShieldAlert, Cpu, CheckCircle2, Lock, HelpCircle, ChevronDown, ChevronUp, MessageSquare } from 'lucide-react';
-import { searchKnowledgeBase, AI_KNOWLEDGE_BASE, KnowledgeItem } from '@/lib/ai-knowledge-base';
+import {
+  Bot, X, Send, Sparkles, RefreshCw, Volume2, VolumeX,
+  ShieldAlert, Cpu, CheckCircle2, HelpCircle, ChevronDown,
+  Waves, Minimize2, Maximize2
+} from 'lucide-react';
+import { searchKnowledgeBase, AI_KNOWLEDGE_BASE } from '@/lib/ai-knowledge-base';
 import { useAuth } from '@/lib/auth-context';
 
 interface ChatMessage {
@@ -13,274 +17,415 @@ interface ChatMessage {
   timestamp: string;
 }
 
+const ACCENT = '#2dd4bf';
+const VIOLET = '#a78bfa';
+
 export const GuardianAI: React.FC = () => {
   const { isLoggedIn } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [isMinimised, setIsMinimised] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(false);
-  const [showGuideDrawer, setShowGuideDrawer] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setMessages([
-      {
-        id: 'msg-0',
-        sender: 'ai',
-        text: 'Greetings! 👋 I am Guardian AI, trained over 150+ subsea telemetry prompts. Ask me any basic greeting, how to use the site, how to deploy AUV drones, or inspect GIS maps!',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      }
-    ]);
+    setMessages([{
+      id: 'msg-0',
+      sender: 'ai',
+      text: 'Hi! 👋 I\'m Guardian AI, trained on 150+ subsea telemetry prompts. Ask me about AUV drones, GIS maps, datasets, or how to use this platform!',
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    }]);
   }, []);
 
   useEffect(() => {
-    if (isOpen) {
-      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (isOpen && !isMinimised) {
+      setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
     }
-  }, [messages, isOpen]);
+  }, [messages, isOpen, isMinimised]);
+
+  useEffect(() => {
+    if (isOpen && !isMinimised) {
+      setTimeout(() => inputRef.current?.focus(), 300);
+    }
+  }, [isOpen, isMinimised]);
+
+  // Lock body scroll when open on mobile
+  useEffect(() => {
+    const isMobile = window.innerWidth < 640;
+    if (isOpen && !isMinimised && isMobile) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen, isMinimised]);
 
   const speakText = (text: string) => {
     if (soundEnabled && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text.replace(/[*#]/g, ''));
-      utterance.rate = 1.0;
-      window.speechSynthesis.speak(utterance);
+      const u = new SpeechSynthesisUtterance(text.replace(/[*#]/g, ''));
+      u.rate = 1.0;
+      window.speechSynthesis.speak(u);
     }
   };
 
   const handleSendMessage = (textToSend?: string) => {
-    const text = textToSend || inputValue;
-    if (!text.trim()) return;
+    const text = (textToSend || inputValue).trim();
+    if (!text) return;
 
     const userMsg: ChatMessage = {
       id: `usr-${Date.now()}`,
       sender: 'user',
-      text: text,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      text,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
     setMessages((prev) => [...prev, userMsg]);
     if (!textToSend) setInputValue('');
     setIsTyping(true);
-    setShowGuideDrawer(false);
+    setShowGuide(false);
 
     setTimeout(() => {
       const match = searchKnowledgeBase(text);
-      
-      let aiResponseText = '';
-      let matchTopic = '';
-
-      if (match) {
-        aiResponseText = match.answer;
-        matchTopic = match.topic;
-      } else {
-        aiResponseText = `Diagnostic for "${text}": Sector 4 Mid-Atlantic Ridge remains at Critical Risk (Health 38/100) due to 45,000 particles/m³ polyethylene microplastics. AUV DeepGuardian-Alpha is actively patrolling.`;
-      }
-
       const aiMsg: ChatMessage = {
         id: `ai-${Date.now()}`,
         sender: 'ai',
-        text: aiResponseText,
-        topic: matchTopic,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        text: match
+          ? match.answer
+          : `Scanning subsea index for "${text}"... Sector 4 Mid-Atlantic Ridge remains Critical (Health 38/100) — 45,000 particles/m³ microplastics detected. AUV DeepGuardian-Alpha patrolling.`,
+        topic: match?.topic,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
-
       setMessages((prev) => [...prev, aiMsg]);
       setIsTyping(false);
-      speakText(aiResponseText);
-    }, 400);
+      speakText(aiMsg.text);
+    }, 600);
   };
+
+  const quickChips = [
+    'Hello 👋', 'What is DeepSea Guardian?', 'Deploy AUV Drone',
+    'Download CSV data', 'Sector 4 critical?', 'Coast Guard Helpline',
+  ];
 
   const categories = [
     { name: '👋 Greetings', items: AI_KNOWLEDGE_BASE.filter(k => k.category === 'Greeting') },
     { name: '🚀 Getting Started', items: AI_KNOWLEDGE_BASE.filter(k => k.category === 'Getting Started') },
-    { name: '🌊 AUV Drones & GIS', items: AI_KNOWLEDGE_BASE.filter(k => k.category === 'AUV Swarm' || k.category === 'GIS & Map') },
-    { name: '📊 Datasets & Reports', items: AI_KNOWLEDGE_BASE.filter(k => k.category === 'Datasets') },
+    { name: '🌊 AUV & GIS', items: AI_KNOWLEDGE_BASE.filter(k => k.category === 'AUV Swarm' || k.category === 'GIS & Map') },
+    { name: '📊 Datasets', items: AI_KNOWLEDGE_BASE.filter(k => k.category === 'Datasets') },
     { name: '⚠️ Helplines', items: AI_KNOWLEDGE_BASE.filter(k => k.category === 'Helplines') },
   ];
 
   return (
     <>
-      {/* Floating Trigger Button - Matte Slate Charcoal */}
+      {/* ── Floating Trigger Button ── */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-20 right-5 lg:bottom-6 lg:right-6 z-40 px-4 py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 shadow-xl transition-all flex items-center gap-2.5 ios-spring"
-        title="Open Guardian AI Assistant"
+        onClick={() => { setIsOpen(true); setIsMinimised(false); }}
+        aria-label="Open Guardian AI Assistant"
+        className="fixed bottom-20 right-4 lg:bottom-8 lg:right-6 z-40 flex items-center gap-2.5 px-4 py-3 rounded-2xl ios-spring"
+        style={{
+          background: 'linear-gradient(135deg, rgba(4,8,20,0.92), rgba(8,14,28,0.92))',
+          backdropFilter: 'blur(20px)',
+          border: `1px solid ${ACCENT}30`,
+          boxShadow: `0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px ${ACCENT}15`,
+          display: isOpen ? 'none' : 'flex',
+        }}
       >
         <div className="relative">
-          <Bot className="w-5 h-5 text-slate-200 animate-pulse" />
-          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-slate-900 animate-ping" />
+          <Bot className="w-5 h-5" style={{ color: ACCENT }} />
+          <span
+            className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full animate-ping"
+            style={{ background: '#34d399' }}
+          />
         </div>
-        <span className="font-bold text-xs tracking-wide hidden sm:inline">
-          Guardian AI Assistant
-        </span>
+        <span className="font-bold text-xs text-white/80 hidden sm:inline">Guardian AI</span>
       </button>
 
-      {/* Glassmorphism Chat Drawer Window */}
+      {/* ── Chat Window ── */}
       {isOpen && (
-        <div className="fixed bottom-24 right-4 lg:bottom-20 lg:right-6 z-50 w-[94vw] sm:w-[460px] h-[580px] rounded-3xl glass-panel border border-slate-300 dark:border-slate-700 shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5">
-          
-          {/* Header */}
-          <div className="p-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700">
-                <Sparkles className="w-5 h-5 animate-pulse" />
-              </div>
-              <div>
-                <h3 className="font-bold text-sm text-white flex items-center gap-2">
-                  Guardian AI Assistant
-                </h3>
-                <p className="text-[10px] text-slate-400 font-mono">Trained on 150+ Subsea Prompts</p>
-              </div>
-            </div>
+        <>
+          {/* Mobile full-screen backdrop */}
+          <div
+            className="fixed inset-0 z-[55] sm:hidden"
+            style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }}
+            onClick={() => setIsOpen(false)}
+          />
 
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={() => setShowGuideDrawer(!showGuideDrawer)}
-                className={`p-1.5 rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold ${
-                  showGuideDrawer ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white bg-slate-800'
-                }`}
-                title="View All Suggested Questions & Instructions"
-              >
-                <HelpCircle className="w-3.5 h-3.5" />
-                <span>Guide</span>
-              </button>
-
-              <button
-                onClick={() => setSoundEnabled(!soundEnabled)}
-                className={`p-1.5 rounded-lg transition-colors ${
-                  soundEnabled ? 'text-emerald-400 bg-slate-800' : 'text-slate-400 hover:text-white'
-                }`}
-                title={soundEnabled ? 'Mute AI Voice' : 'Enable AI Speech Output'}
-              >
-                {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-              </button>
-
-              <button
-                onClick={() => setIsOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-
-          {/* EXPANDABLE ALL SUGGESTED QUESTIONS & INSTRUCTIONS GUIDE */}
-          {showGuideDrawer && (
-            <div className="p-4 bg-slate-900 border-b border-slate-800 max-h-[300px] overflow-y-auto space-y-3 text-xs animate-in slide-in-from-top-2">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                <span className="font-bold text-slate-200 text-xs">All Suggested Questions & Platform Guide</span>
-                <button
-                  onClick={() => setShowGuideDrawer(false)}
-                  className="text-slate-400 hover:text-white text-[10px]"
+          <div
+            className="fixed z-[60] flex flex-col overflow-hidden animate-bubble"
+            style={{
+              /* Mobile: full screen inset; Desktop: bottom-right panel */
+              bottom: 'env(safe-area-inset-bottom, 0)',
+              right: 0,
+              left: 0,
+              top: 0,
+              borderRadius: 0,
+              // Override for sm+ screens
+              ...(typeof window !== 'undefined' && window.innerWidth >= 640
+                ? {
+                    bottom: 24,
+                    right: 24,
+                    left: 'auto',
+                    top: 'auto',
+                    width: 420,
+                    height: isMinimised ? 64 : 580,
+                    borderRadius: 24,
+                  }
+                : {}),
+              background: 'rgba(4, 8, 20, 0.92)',
+              backdropFilter: 'blur(40px) saturate(200%)',
+              WebkitBackdropFilter: 'blur(40px) saturate(200%)',
+              border: `1px solid ${ACCENT}18`,
+              boxShadow: `0 24px 80px rgba(0,0,0,0.7), 0 0 0 1px ${ACCENT}10`,
+              transition: 'height 0.4s cubic-bezier(0.34,1.56,0.64,1)',
+            }}
+          >
+            {/* Header */}
+            <div
+              className="flex items-center justify-between px-4 py-3 shrink-0"
+              style={{ borderBottom: `1px solid rgba(255,255,255,0.06)` }}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-9 h-9 rounded-2xl flex items-center justify-center"
+                  style={{ background: `${ACCENT}15`, border: `1px solid ${ACCENT}25` }}
                 >
-                  Close Guide ✕
+                  <Sparkles className="w-4 h-4 animate-pulse" style={{ color: ACCENT }} />
+                </div>
+                <div>
+                  <h3 className="font-black text-sm text-white">Guardian AI</h3>
+                  <p className="text-[10px] font-mono" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                    150+ Subsea Prompts · Online
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1">
+                {/* Guide toggle */}
+                <button
+                  onClick={() => setShowGuide(!showGuide)}
+                  className="p-2 rounded-xl ios-bubble"
+                  style={{
+                    background: showGuide ? `${VIOLET}20` : 'rgba(255,255,255,0.04)',
+                    border: `1px solid ${showGuide ? `${VIOLET}30` : 'rgba(255,255,255,0.06)'}`,
+                    color: showGuide ? VIOLET : 'rgba(255,255,255,0.4)',
+                  }}
+                  title="Suggested Questions"
+                >
+                  <HelpCircle className="w-4 h-4" />
+                </button>
+
+                {/* Sound toggle */}
+                <button
+                  onClick={() => setSoundEnabled(!soundEnabled)}
+                  className="p-2 rounded-xl ios-bubble"
+                  style={{
+                    background: soundEnabled ? 'rgba(52,211,153,0.12)' : 'rgba(255,255,255,0.04)',
+                    color: soundEnabled ? '#34d399' : 'rgba(255,255,255,0.4)',
+                  }}
+                  title={soundEnabled ? 'Mute AI voice' : 'Enable AI voice'}
+                >
+                  {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                </button>
+
+                {/* Minimise (desktop only) */}
+                <button
+                  onClick={() => setIsMinimised(!isMinimised)}
+                  className="p-2 rounded-xl ios-bubble hidden sm:flex"
+                  style={{ background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)' }}
+                  title={isMinimised ? 'Expand' : 'Minimise'}
+                >
+                  {isMinimised ? <Maximize2 className="w-4 h-4" /> : <Minimize2 className="w-4 h-4" />}
+                </button>
+
+                {/* Close */}
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="p-2 rounded-xl ios-bubble"
+                  style={{ background: 'rgba(251,113,133,0.08)', border: '1px solid rgba(251,113,133,0.15)', color: '#fb7185' }}
+                  title="Close"
+                >
+                  <X className="w-4 h-4" />
                 </button>
               </div>
+            </div>
 
-              {categories.map((cat, i) => (
-                <div key={i} className="space-y-1.5">
-                  <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">
-                    {cat.name}
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {cat.items.map((item, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => handleSendMessage(item.question)}
-                        className="text-left px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 hover:text-white text-slate-300 text-[10px] transition-all font-medium border border-slate-700"
-                      >
-                        {item.question}
-                      </button>
+            {!isMinimised && (
+              <>
+                {/* Guide Drawer */}
+                {showGuide && (
+                  <div
+                    className="p-3 max-h-48 overflow-y-auto space-y-3 animate-slide-up shrink-0"
+                    style={{ borderBottom: `1px solid rgba(255,255,255,0.05)`, background: 'rgba(0,0,0,0.2)' }}
+                  >
+                    <p className="text-[10px] font-black uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                      Suggested Questions
+                    </p>
+                    {categories.map((cat, i) => (
+                      <div key={i} className="space-y-1.5">
+                        <span className="text-[9px] font-black uppercase tracking-widest block" style={{ color: 'rgba(255,255,255,0.25)' }}>
+                          {cat.name}
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {cat.items.map((item, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => handleSendMessage(item.question)}
+                              className="text-left px-2.5 py-1 rounded-xl text-[10px] font-medium ios-spring"
+                              style={{
+                                background: `${ACCENT}08`,
+                                border: `1px solid ${ACCENT}18`,
+                                color: `${ACCENT}cc`,
+                              }}
+                            >
+                              {item.question}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     ))}
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Quick Prompt Chips (Top Carousel) */}
-          <div className="p-2.5 bg-slate-950/80 border-b border-slate-800 flex items-center gap-1.5 overflow-x-auto no-scrollbar text-[11px]">
-            {[
-              'Hello / Hi',
-              'What is DeepSea Guardian?',
-              'Deploy AUV Swarm Drone',
-              'How to download CSV/NetCDF?',
-              'Why is Sector 4 critical?',
-              'Coast Guard Helpline'
-            ].map((chip, idx) => (
-              <button
-                key={idx}
-                onClick={() => handleSendMessage(chip)}
-                className="whitespace-nowrap px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition-all text-[10px] font-medium"
-              >
-                {chip}
-              </button>
-            ))}
-          </div>
-
-          {/* Messages Area */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-3 text-xs bg-slate-100/50 dark:bg-slate-950/50">
-            {messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`flex gap-2.5 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                {msg.sender === 'ai' && (
-                  <div className="w-7 h-7 rounded-xl bg-slate-800 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm border border-slate-700">
-                    <Bot className="w-4 h-4" />
-                  </div>
                 )}
+
+                {/* Quick Chips */}
                 <div
-                  className={`max-w-[86%] p-3.5 rounded-2xl ${
-                    msg.sender === 'user'
-                      ? 'bg-slate-800 text-white font-medium rounded-br-none shadow-sm'
-                      : 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-800 rounded-bl-none shadow-sm'
-                  }`}
+                  className="flex items-center gap-1.5 px-3 py-2 overflow-x-auto no-scrollbar shrink-0"
+                  style={{ borderBottom: `1px solid rgba(255,255,255,0.04)` }}
                 >
-                  {msg.topic && (
-                    <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 block w-max mb-1">
-                      TOPIC: {msg.topic.toUpperCase()}
-                    </span>
-                  )}
-                  <p className="leading-relaxed text-xs whitespace-pre-line">{msg.text}</p>
-                  <span className="text-[9px] block text-right mt-1.5 opacity-60 font-mono">
-                    {msg.timestamp}
-                  </span>
+                  {quickChips.map((chip, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => handleSendMessage(chip)}
+                      className="whitespace-nowrap px-3 py-1.5 rounded-full text-[10px] font-bold ios-spring shrink-0"
+                      style={{
+                        background: 'rgba(255,255,255,0.04)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        color: 'rgba(255,255,255,0.5)',
+                      }}
+                    >
+                      {chip}
+                    </button>
+                  ))}
                 </div>
-              </div>
-            ))}
 
-            {isTyping && (
-              <div className="flex gap-2 items-center text-slate-500 dark:text-slate-400 text-xs">
-                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                <span className="font-mono text-[11px]">Searching subsea prompt index...</span>
-              </div>
+                {/* Messages */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
+                  {messages.map((msg, i) => (
+                    <div
+                      key={msg.id}
+                      className={`flex gap-2.5 animate-slide-up ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                      style={{ animationDelay: `${i * 0.02}s` }}
+                    >
+                      {msg.sender === 'ai' && (
+                        <div
+                          className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
+                          style={{ background: `${ACCENT}15`, border: `1px solid ${ACCENT}25` }}
+                        >
+                          <Bot className="w-3.5 h-3.5" style={{ color: ACCENT }} />
+                        </div>
+                      )}
+                      <div
+                        className="max-w-[85%] p-3 rounded-2xl text-xs"
+                        style={
+                          msg.sender === 'user'
+                            ? {
+                                background: `linear-gradient(135deg, ${VIOLET}25, ${VIOLET}15)`,
+                                border: `1px solid ${VIOLET}25`,
+                                color: 'rgba(255,255,255,0.9)',
+                                borderBottomRightRadius: 4,
+                              }
+                            : {
+                                background: 'rgba(255,255,255,0.05)',
+                                border: '1px solid rgba(255,255,255,0.08)',
+                                color: 'rgba(255,255,255,0.8)',
+                                borderBottomLeftRadius: 4,
+                              }
+                        }
+                      >
+                        {msg.topic && (
+                          <span
+                            className="text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded block w-max mb-1.5"
+                            style={{ background: `${ACCENT}15`, color: ACCENT }}
+                          >
+                            {msg.topic}
+                          </span>
+                        )}
+                        <p className="leading-relaxed whitespace-pre-line">{msg.text}</p>
+                        <span className="text-[9px] block text-right mt-1.5 opacity-40 font-mono">
+                          {msg.timestamp}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+
+                  {isTyping && (
+                    <div className="flex gap-2.5 items-center">
+                      <div
+                        className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0"
+                        style={{ background: `${ACCENT}15`, border: `1px solid ${ACCENT}25` }}
+                      >
+                        <Bot className="w-3.5 h-3.5" style={{ color: ACCENT }} />
+                      </div>
+                      <div
+                        className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl"
+                        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}
+                      >
+                        {[0, 1, 2].map((i) => (
+                          <span
+                            key={i}
+                            className="w-1.5 h-1.5 rounded-full animate-bounce"
+                            style={{ background: ACCENT, animationDelay: `${i * 0.15}s` }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  <div ref={chatEndRef} />
+                </div>
+
+                {/* Input */}
+                <div
+                  className="px-3 py-3 flex items-center gap-2 shrink-0"
+                  style={{ borderTop: `1px solid rgba(255,255,255,0.06)` }}
+                >
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                    placeholder="Ask about AUV drones, maps, datasets..."
+                    className="flex-1 px-4 py-2.5 rounded-2xl text-xs outline-none"
+                    style={{
+                      background: 'rgba(255,255,255,0.05)',
+                      border: `1px solid rgba(255,255,255,0.08)`,
+                      color: 'rgba(255,255,255,0.85)',
+                    }}
+                  />
+                  <button
+                    onClick={() => handleSendMessage()}
+                    disabled={!inputValue.trim()}
+                    className="w-10 h-10 rounded-2xl flex items-center justify-center ios-bubble shrink-0"
+                    style={{
+                      background: inputValue.trim()
+                        ? `linear-gradient(135deg, ${ACCENT}, #06b6d4)`
+                        : 'rgba(255,255,255,0.04)',
+                      border: `1px solid ${inputValue.trim() ? `${ACCENT}40` : 'rgba(255,255,255,0.06)'}`,
+                      color: inputValue.trim() ? '#040d14' : 'rgba(255,255,255,0.2)',
+                      boxShadow: inputValue.trim() ? `0 4px 14px ${ACCENT}30` : 'none',
+                      transition: 'all 0.3s cubic-bezier(0.34,1.56,0.64,1)',
+                    }}
+                  >
+                    <Send className="w-4 h-4" />
+                  </button>
+                </div>
+              </>
             )}
-            <div ref={chatEndRef} />
           </div>
-
-          {/* Input Footer */}
-          <div className="p-3 bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-              placeholder="Ask hi, hello, drone deployment, GIS maps, datasets..."
-              className="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 text-xs focus:outline-none focus:border-slate-500 transition-all placeholder:text-slate-500"
-            />
-            <button
-              onClick={() => handleSendMessage()}
-              disabled={!inputValue.trim()}
-              className="p-2.5 rounded-xl bg-slate-800 text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-700 transition-all shadow-sm"
-            >
-              <Send className="w-4 h-4" />
-            </button>
-          </div>
-
-        </div>
+        </>
       )}
     </>
   );
