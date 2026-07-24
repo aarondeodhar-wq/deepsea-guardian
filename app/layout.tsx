@@ -8,8 +8,8 @@ import { Footer } from '@/components/footer';
 import { GuardianAI } from '@/components/guardian-ai';
 
 export const metadata: Metadata = {
-  title: 'DeepSea Guardian | Autonomous Deep Ocean Risk Prediction Platform',
-  description: 'Official Deep Ocean Environmental Risk Prediction Platform using AUV drone swarms, SAR satellite radar, and hydrodynamic AI models.',
+  title: 'DeepSea Guardian | Subsea Environmental Risk Prediction Platform',
+  description: 'Deep ocean environmental risk prediction platform using AUV drone swarms, SAR satellite radar, and hydrodynamic prediction models.',
 };
 
 export default function RootLayout({
@@ -18,12 +18,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
-      <body className="min-h-screen bg-slate-100 dark:bg-[#18202c] text-slate-900 dark:text-slate-100 font-sans antialiased flex flex-col">
+    <html lang="en" className="dark overflow-x-hidden">
+      <body className="min-h-screen bg-[#f4f6f9] dark:bg-[#18202c] text-slate-900 dark:text-slate-100 font-sans antialiased flex flex-col overflow-x-hidden">
         <AuthProvider>
           <ThemeProvider>
             <Navbar />
-            <main className="flex-1 w-full">{children}</main>
+            <main className="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pb-28 lg:pb-8">
+              {children}
+            </main>
             <Footer />
             <GuardianAI />
           </ThemeProvider>
