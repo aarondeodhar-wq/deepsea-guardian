@@ -149,12 +149,12 @@ export default function HomePage() {
   ];
 
   const emergencyHotlines = [
-    { agency: 'US Coast Guard Command',         number: '+1 (800) 424-8802', region: 'Americas & Atlantic',   code: 'US Command', color: C.rose    },
-    { agency: 'UN Environment Program',         number: '+41 22 917 8111',   region: 'Global Marine Crisis',  code: 'UN Global',  color: C.violet  },
-    { agency: 'EMSA European Safety Agency',    number: '+351 21 120 9200',  region: 'Europe & Med',          code: 'EU Safety',  color: C.sky     },
-    { agency: 'AMSA Maritime Safety Authority', number: '+61 2 6279 5000',   region: 'Indo-Pacific & Reefs',  code: 'AU Pacific', color: C.teal    },
-    { agency: 'Japan Coast Guard Crisis Line',  number: '+81 3 3591 6361',   region: 'Pacific Trench Sector', code: 'JP Trench',  color: C.amber   },
-    { agency: 'UK Maritime & Coastguard',       number: '+44 20 3817 2000',  region: 'North Sea & Ridge',     code: 'UK Agency',  color: C.emerald },
+    { agency: 'Indian Coast Guard SAR Command',  number: '1554 / +91 11 2338 4999', region: 'Indian Ocean & Arabian Sea', code: 'IN Guard', color: C.rose    },
+    { agency: 'US Coast Guard Command',         number: '+1 (800) 424-8802',       region: 'Americas & Atlantic',       code: 'US Command', color: C.teal    },
+    { agency: 'UN Environment Program',         number: '+41 22 917 8111',         region: 'Global Marine Crisis',      code: 'UN Global',  color: C.violet  },
+    { agency: 'EMSA European Safety Agency',    number: '+351 21 120 9200',        region: 'Europe & Med',              code: 'EU Safety',  color: C.sky     },
+    { agency: 'AMSA Maritime Safety Authority', number: '+61 2 6279 5000',         region: 'Indo-Pacific & Reefs',      code: 'AU Pacific', color: C.amber   },
+    { agency: 'Japan Coast Guard Crisis Line',  number: '+81 3 3591 6361',         region: 'Pacific Trench Sector',     code: 'JP Trench',  color: C.emerald },
   ];
 
   return (
@@ -163,28 +163,31 @@ export default function HomePage() {
 
       {/* ── Floating Side Section Quick Jump Bar ── */}
       <div className="fixed right-3 top-1/2 -translate-y-1/2 z-30 hidden xl:flex flex-col items-end gap-2 pointer-events-auto">
-        <div className="p-2 rounded-2xl flex flex-col gap-1.5 glass-panel shadow-2xl transition-all border border-slate-200/80 dark:border-white/10">
+        <div className="p-2.5 rounded-2xl flex flex-col gap-1.5 glass-panel shadow-2xl transition-all border border-slate-300 dark:border-white/10">
+          <span className="text-[9px] font-mono font-black uppercase tracking-widest text-slate-500 dark:text-white/40 px-2 pb-1 border-b border-slate-200 dark:border-white/10">
+            Navigation
+          </span>
           {sectionsList.map((sec) => {
             const isActive = activeSection === sec.id;
             return (
               <button
                 key={sec.id}
                 onClick={() => scrollToSection(sec.id)}
-                className="group relative flex items-center gap-2 px-2 py-1 rounded-xl text-[10px] font-bold transition-all ios-spring"
+                className="group relative flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all ios-spring"
                 style={
                   isActive
                     ? { background: `${sec.color}22`, border: `1px solid ${sec.color}40`, color: sec.color }
-                    : { color: 'var(--txt-muted)' }
+                    : { color: 'var(--txt-primary)' }
                 }
               >
                 <span
                   className="w-2.5 h-2.5 rounded-full transition-all shrink-0"
                   style={{
-                    background: isActive ? sec.color : 'var(--txt-faint)',
+                    background: isActive ? sec.color : 'var(--txt-muted)',
                     boxShadow: isActive ? `0 0 10px ${sec.color}` : 'none',
                   }}
                 />
-                <span className="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                <span className="text-[11px] font-extrabold whitespace-nowrap">
                   {sec.label}
                 </span>
               </button>

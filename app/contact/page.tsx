@@ -59,8 +59,9 @@ export default function ContactPage() {
             <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
               Report active oil slicks or ghost nets requiring immediate AUV/ROV deployment.
             </p>
-            <p className="font-mono text-xs text-coral-600 dark:text-coral-400 font-bold">
-              Hotline: +1 (800) 555-OCEAN
+            <p className="font-mono text-xs text-rose-600 dark:text-rose-400 font-bold space-y-1">
+              <span className="block">🇮🇳 Indian Coast Guard: 1554 / +91 11 2338 4999</span>
+              <span className="block">🇺🇸 US Coast Guard: +1 (800) 424-8802</span>
             </p>
           </div>
 
