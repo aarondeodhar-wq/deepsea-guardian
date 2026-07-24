@@ -627,6 +627,14 @@ export const systemOverview = {
 };
 
 export const exportDatasetAsFile = (datasetType: string, format: 'CSV' | 'JSON' | 'GeoJSON') => {
+  if (typeof window !== 'undefined') {
+    const userStr = localStorage.getItem('deepsea_user');
+    if (!userStr) {
+      window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { dataset: datasetType } }));
+      return;
+    }
+  }
+
   let content = '';
   let filename = `DeepSea_Guardian_${datasetType}_${Date.now()}`;
   let mimeType = 'text/csv';

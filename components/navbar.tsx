@@ -44,12 +44,20 @@ export const Navbar: React.FC = () => {
   const [authTab, setAuthTab] = useState<'login' | 'signup'>('login');
 
   useEffect(() => {
+    const handleOpenAuth = () => {
+      setAuthTab('login');
+      setAuthModalOpen(true);
+    };
+
+    window.addEventListener('open-auth-modal', handleOpenAuth);
+
     if (controlCenterOpen || authModalOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'auto';
     }
     return () => {
+      window.removeEventListener('open-auth-modal', handleOpenAuth);
       document.body.style.overflow = 'auto';
     };
   }, [controlCenterOpen, authModalOpen]);
