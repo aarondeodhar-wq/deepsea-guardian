@@ -122,7 +122,7 @@ export const Navbar: React.FC = () => {
           {/* Brand Logo & Name */}
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl sm:rounded-2xl bg-slate-800 text-white flex items-center justify-center border border-slate-700 shadow-sm">
-              <Waves className="w-4 h-4 sm:w-5 sm:h-5 text-slate-200" />
+              <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
             </div>
             <span className="font-extrabold text-sm sm:text-base tracking-wide text-slate-900 dark:text-white">
               DEEPSEA <span className="text-slate-600 dark:text-slate-300">GUARDIAN</span>
@@ -345,7 +345,7 @@ export const Navbar: React.FC = () => {
             pathname === '/' ? 'text-white bg-slate-800 border border-slate-700' : 'text-slate-400'
           }`}
         >
-          <Waves className="w-4 h-4" />
+          <ShieldCheck className="w-4 h-4 text-emerald-400" />
           <span>Home</span>
         </Link>
 

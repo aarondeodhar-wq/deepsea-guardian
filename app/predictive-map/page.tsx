@@ -17,7 +17,8 @@ import {
   CheckCircle2, 
   HelpCircle,
   Radio,
-  Layers
+  Layers,
+  Globe
 } from 'lucide-react';
 import { oceanSectors, exportDatasetAsFile } from '@/lib/mock-data';
 
@@ -35,7 +36,7 @@ export default function PredictiveMapPage() {
       spreadKm2: 14.5,
       riskScore: 88,
       riskLevel: 'Critical',
-      radiusMeters: 25000,
+      radiusMeters: 80000,
       color: '#f43f5e',
       factors: [
         'Seasonal Atlantic Gyre Current Vectors (0.82 m/s SW)',
@@ -49,7 +50,7 @@ export default function PredictiveMapPage() {
       spreadKm2: 48.2,
       riskScore: 92,
       riskLevel: 'Critical',
-      radiusMeters: 60000,
+      radiusMeters: 180000,
       color: '#e11d48',
       factors: [
         'Accelerated Surface Current Drift (+1.2 m/s)',
@@ -63,7 +64,7 @@ export default function PredictiveMapPage() {
       spreadKm2: 185.0,
       riskScore: 96,
       riskLevel: 'Severe Emergency',
-      radiusMeters: 140000,
+      radiusMeters: 420000,
       color: '#9f1239',
       factors: [
         'Pelagic Gyre Trapping 185 km² Microplastic Mass',
@@ -113,7 +114,7 @@ export default function PredictiveMapPage() {
         </div>
       )}
 
-      {/* TIMELINE CONTROL BAR - MATTE SLATE CHARCOAL */}
+      {/* TIMELINE CONTROL BAR */}
       <div className="p-4 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h3 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
@@ -162,7 +163,7 @@ export default function PredictiveMapPage() {
       {/* MAIN REAL GIS MAP DISPERSION CANVAS & RISK ANALYSIS */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* REAL GIS MAP CANVAS WITH DYNAMIC PLUME EXPANSION RING */}
+        {/* REAL GIS MAP CANVAS WITH HIGH-VISIBILITY DISPERSION RING */}
         <div className="lg:col-span-2 space-y-4">
           <div className="rounded-3xl glass-panel border border-slate-300 dark:border-slate-800 overflow-hidden shadow-2xl bg-slate-950">
             
@@ -177,7 +178,7 @@ export default function PredictiveMapPage() {
               </span>
             </div>
 
-            {/* REAL LEAFLET MAP WITH DYNAMIC HEAT RING */}
+            {/* REAL LEAFLET MAP WITH PLUME HEAT RING */}
             <div className="relative h-[420px] sm:h-[480px] w-full bg-slate-950">
               <iframe
                 title="Real GIS Map Plume Dispersion Simulation"
@@ -191,12 +192,14 @@ export default function PredictiveMapPage() {
                       body { margin: 0; padding: 0; background: #0f172a; }
                       #map { width: 100vw; height: 100vh; }
                       .leaflet-container { background: #0f172a; }
+                      .leaflet-popup-content-wrapper { background: #18202c; color: #fff; border-radius: 12px; border: 1px solid #475569; }
+                      .leaflet-popup-tip { background: #18202c; }
                     </style>
                   </head>
                   <body>
                     <div id="map"></div>
                     <script>
-                      var map = L.map('map', { zoomControl: false }).setView([${activeSector.lat}, ${activeSector.lng}], 6);
+                      var map = L.map('map', { zoomControl: false }).setView([${activeSector.lat}, ${activeSector.lng}], 4);
                       L.control.zoom({ position: 'bottomright' }).addTo(map);
 
                       L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -204,7 +207,7 @@ export default function PredictiveMapPage() {
                         attribution: 'ESRI Satellite'
                       }).addTo(map);
 
-                      // Plume Dispersion Heat Ring
+                      // Plume Dispersion Outer Ring
                       var plumeCircle = L.circle([${activeSector.lat}, ${activeSector.lng}], {
                         color: '${plumeMetrics.color}',
                         fillColor: '${plumeMetrics.color}',
@@ -213,17 +216,26 @@ export default function PredictiveMapPage() {
                         weight: 3
                       }).addTo(map);
 
+                      // Inner Core High-Density Ring
+                      var coreCircle = L.circle([${activeSector.lat}, ${activeSector.lng}], {
+                        color: '#ffffff',
+                        fillColor: '#f43f5e',
+                        fillOpacity: 0.75,
+                        radius: ${plumeMetrics.radiusMeters * 0.3},
+                        weight: 2
+                      }).addTo(map);
+
                       // Sector Pin Marker
                       var marker = L.circleMarker([${activeSector.lat}, ${activeSector.lng}], {
-                        radius: 12,
+                        radius: 10,
                         fillColor: '#ffffff',
-                        color: '${plumeMetrics.color}',
+                        color: '#f43f5e',
                         weight: 4,
                         opacity: 1,
                         fillOpacity: 1
                       }).addTo(map);
 
-                      marker.bindTooltip("<b>${activeSector.name}</b><br/>Plume Area: ${plumeMetrics.spreadKm2} km²<br/>Risk Score: ${plumeMetrics.riskScore}/100", { permanent: true, direction: 'top' });
+                      marker.bindTooltip("<div style='font-family:sans-serif; padding:4px;'><b>${activeSector.name}</b><br/>Plume Dispersion: ${plumeMetrics.spreadKm2} km²<br/>Risk Level: ${plumeMetrics.riskLevel} (${plumeMetrics.riskScore}/100)</div>", { permanent: true, direction: 'top' });
                     </script>
                   </body>
                   </html>
@@ -235,25 +247,31 @@ export default function PredictiveMapPage() {
               <div className="absolute top-4 left-4 z-20 p-4 rounded-2xl bg-slate-900/95 backdrop-blur-2xl border border-slate-700 shadow-2xl text-white space-y-1 font-mono">
                 <span className="text-[10px] text-slate-400 block uppercase font-bold">PLUME CONTAMINATION AREA</span>
                 <span className="text-3xl font-extrabold text-white block">{plumeMetrics.spreadKm2} <span className="text-sm text-slate-400 font-sans">km²</span></span>
-                <span className="text-xs text-rose-400 font-bold block">Risk Score: {plumeMetrics.riskScore} / 100</span>
+                <div className="pt-1 text-[11px] space-y-0.5 border-t border-slate-800">
+                  <span className="text-rose-400 font-bold block">Risk Score: {plumeMetrics.riskScore} / 100</span>
+                  <span className="text-slate-300 block">Depth: {activeSector.depthMeters}m</span>
+                </div>
               </div>
             </div>
 
-            {/* Bottom Sector Switcher Bar */}
-            <div className="p-4 bg-slate-900 border-t border-slate-800 flex items-center justify-between text-xs">
-              <span className="font-mono text-slate-400 text-[11px]">Select Monitored Sector:</span>
-              <div className="flex gap-2">
-                {oceanSectors.slice(1, 4).map((sec) => (
+            {/* Bottom Full Sector Switcher Bar */}
+            <div className="p-4 bg-slate-900 border-t border-slate-800 space-y-2">
+              <span className="font-mono text-slate-400 text-[10px] uppercase tracking-wider block font-bold">
+                Select Monitored Ocean Sector:
+              </span>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {oceanSectors.slice(0, 6).map((sec) => (
                   <button
                     key={sec.id}
                     onClick={() => setSelectedSectorId(sec.id)}
-                    className={`px-3 py-1.5 rounded-xl font-mono text-xs font-bold transition-all ${
+                    className={`p-2 rounded-xl text-xs font-bold text-left transition-all border ${
                       selectedSectorId === sec.id
-                        ? 'bg-slate-800 text-white border border-slate-700 shadow-sm'
-                        : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+                        ? 'bg-slate-800 text-white border-slate-700 shadow-sm'
+                        : 'bg-slate-950 text-slate-400 hover:text-white border-slate-800'
                     }`}
                   >
-                    {sec.id}
+                    <span className="font-mono text-[10px] text-rose-400 block">{sec.id}</span>
+                    <span className="truncate block text-slate-200">{sec.name.split(' ')[0]} {sec.name.split(' ')[1]}</span>
                   </button>
                 ))}
               </div>
