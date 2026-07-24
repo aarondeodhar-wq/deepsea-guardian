@@ -259,7 +259,7 @@ export const oceanSectors: OceanSector[] = [
   }
 ];
 
-// 18 VERIFIED HIGH-RES OCEAN UNDERWATER SPECIES
+// 18 VERIFIED HIGH-RES OCEAN UNDERWATER SPECIES (100% UNIQUE IMAGES)
 export const marineSpecies: MarineSpecies[] = [
   {
     id: 'SPEC-01',
@@ -269,7 +269,7 @@ export const marineSpecies: MarineSpecies[] = [
     observedCount: 42,
     depthRange: '0 - 500 m',
     lastDetected: '2 minutes ago',
-    imageUrl: 'https://images.unsplash.com/photo-1568430460464-02e1dc18458c?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=800&q=80',
     aiAccuracy: 98,
     populationTrend: 'Increasing',
     primaryHabitat: 'Sector 5 Chagos Trench & Pelagic Corridors'
@@ -295,7 +295,7 @@ export const marineSpecies: MarineSpecies[] = [
     observedCount: 65,
     depthRange: '0 - 1,000 m',
     lastDetected: '32 minutes ago',
-    imageUrl: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?auto=format&fit=crop&w=800&q=80',
     aiAccuracy: 95,
     populationTrend: 'Stable',
     primaryHabitat: 'Sector 1 Mariana Margin Thermal Crests'
@@ -373,7 +373,7 @@ export const marineSpecies: MarineSpecies[] = [
     observedCount: 23,
     depthRange: '0 - 1,000 m',
     lastDetected: '15 minutes ago',
-    imageUrl: 'https://images.unsplash.com/photo-1560275619-4662e36fa65c?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1564419320461-6870880221ad?auto=format&fit=crop&w=800&q=80',
     aiAccuracy: 97,
     populationTrend: 'Declining',
     primaryHabitat: 'Sector 3 Coral Sea Seamounts'
@@ -399,7 +399,7 @@ export const marineSpecies: MarineSpecies[] = [
     observedCount: 19,
     depthRange: '0 - 1,000 m',
     lastDetected: '1 hour ago',
-    imageUrl: 'https://images.unsplash.com/photo-1568430460464-02e1dc18458c?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1559827291-72ee739d0d9a?auto=format&fit=crop&w=800&q=80',
     aiAccuracy: 99,
     populationTrend: 'Stable',
     primaryHabitat: 'Sector 7 Arctic Fram Strait'
@@ -412,7 +412,7 @@ export const marineSpecies: MarineSpecies[] = [
     observedCount: 57,
     depthRange: '170 - 2,140 m',
     lastDetected: '2 hours ago',
-    imageUrl: 'https://images.unsplash.com/photo-1545671913-b89ac1b4ac10?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1544551763-92ad1d0cd9e5?auto=format&fit=crop&w=800&q=80',
     aiAccuracy: 92,
     populationTrend: 'Stable',
     primaryHabitat: 'Sector 10 Gulf of Mexico Deepwater'
@@ -425,7 +425,7 @@ export const marineSpecies: MarineSpecies[] = [
     observedCount: 38,
     depthRange: '0 - 840 m',
     lastDetected: '3 hours ago',
-    imageUrl: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1571752726703-5e7d1f6a986d?auto=format&fit=crop&w=800&q=80',
     aiAccuracy: 94,
     populationTrend: 'Declining',
     primaryHabitat: 'Sector 2 North Atlantic Sargasso Sea'
@@ -438,7 +438,7 @@ export const marineSpecies: MarineSpecies[] = [
     observedCount: 26,
     depthRange: '0 - 1,500 m',
     lastDetected: '4 hours ago',
-    imageUrl: 'https://images.unsplash.com/photo-1568430460464-02e1dc18458c?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1574781330855-d0db8cc6a79c?auto=format&fit=crop&w=800&q=80',
     aiAccuracy: 96,
     populationTrend: 'Stable',
     primaryHabitat: 'Sector 7 Arctic Gateway Basin'
@@ -451,7 +451,7 @@ export const marineSpecies: MarineSpecies[] = [
     observedCount: 74,
     depthRange: '0 - 110 m',
     lastDetected: '5 hours ago',
-    imageUrl: 'https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
     aiAccuracy: 97,
     populationTrend: 'Increasing',
     primaryHabitat: 'Sector 5 Indian Ocean Reserves'
@@ -464,7 +464,7 @@ export const marineSpecies: MarineSpecies[] = [
     observedCount: 49,
     depthRange: '0 - 900 m',
     lastDetected: '6 hours ago',
-    imageUrl: 'https://images.unsplash.com/photo-1568430460464-02e1dc18458c?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1506953823976-52e1fdc0149a?auto=format&fit=crop&w=800&q=80',
     aiAccuracy: 95,
     populationTrend: 'Stable',
     primaryHabitat: 'Sector 7 Arctic Basin Ice Edges'
@@ -477,7 +477,7 @@ export const marineSpecies: MarineSpecies[] = [
     observedCount: 33,
     depthRange: '0 - 80 m',
     lastDetected: '7 hours ago',
-    imageUrl: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1516683900382-f54247501a55?auto=format&fit=crop&w=800&q=80',
     aiAccuracy: 94,
     populationTrend: 'Declining',
     primaryHabitat: 'Sector 3 Coral Slope Reef System'
@@ -490,7 +490,7 @@ export const marineSpecies: MarineSpecies[] = [
     observedCount: 16,
     depthRange: '600 - 1,200 m',
     lastDetected: '8 hours ago',
-    imageUrl: 'https://images.unsplash.com/photo-1545671913-b89ac1b4ac10?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80',
     aiAccuracy: 90,
     populationTrend: 'Stable',
     primaryHabitat: 'Sector 1 Mariana Abyssal Zone'
