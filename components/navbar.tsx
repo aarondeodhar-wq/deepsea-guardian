@@ -53,12 +53,15 @@ export const Navbar: React.FC = () => {
 
     if (controlCenterOpen || authModalOpen) {
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
     }
     return () => {
       window.removeEventListener('open-auth-modal', handleOpenAuth);
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
     };
   }, [controlCenterOpen, authModalOpen]);
 
