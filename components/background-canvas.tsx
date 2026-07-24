@@ -7,7 +7,7 @@ export function BackgroundCanvas() {
   const dark = theme === 'dark';
 
   return (
-    <div className="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
+    <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none transform-gpu" style={{ transform: 'translateZ(0)' }} aria-hidden="true">
 
       {dark ? (
         /* ══════════════════════════════════════════

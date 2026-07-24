@@ -121,10 +121,9 @@ export default function BiodiversityPage() {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 flex flex-col items-center justify-center p-6 text-center">
-                  <Waves className="w-10 h-10 text-sky-400 animate-pulse mb-2" />
-                  <span className="font-bold text-sm text-white">{spec.name}</span>
-                  <span className="text-xs text-sky-300 font-mono italic">{spec.scientificName}</span>
+                <div className="w-full h-full bg-gradient-to-br from-slate-900 via-sky-950/60 to-slate-900 flex flex-col items-center justify-center p-6 text-center">
+                  <Fish className="w-12 h-12 text-sky-400 animate-pulse mb-1" />
+                  <span className="text-[10px] text-sky-300 font-mono tracking-widest uppercase">AUV Visual Telemetry</span>
                 </div>
               )}
 

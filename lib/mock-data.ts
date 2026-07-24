@@ -50,7 +50,7 @@ export interface MarineSpecies {
   id: string;
   name: string;
   scientificName: string;
-  status: 'Critically Endangered' | 'Endangered' | 'Vulnerable' | 'Least Concern';
+  status: 'Critically Endangered' | 'Endangered' | 'Vulnerable' | 'Near Threatened' | 'Least Concern' | 'Data Deficient';
   observedCount: number;
   depthRange: string;
   lastDetected: string;
@@ -259,7 +259,7 @@ export const oceanSectors: OceanSector[] = [
   }
 ];
 
-// 8 VERIFIED HIGH-RES OCEAN UNDERWATER IMAGES
+// 18 VERIFIED HIGH-RES OCEAN UNDERWATER SPECIES
 export const marineSpecies: MarineSpecies[] = [
   {
     id: 'SPEC-01',
@@ -308,7 +308,7 @@ export const marineSpecies: MarineSpecies[] = [
     observedCount: 29,
     depthRange: '400 - 3,000 m',
     lastDetected: '1 hour ago',
-    imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1544551763-77ef2d0cfc6c?auto=format&fit=crop&w=800&q=80',
     aiAccuracy: 97,
     populationTrend: 'Stable',
     primaryHabitat: 'Sector 4 Mid-Atlantic Deep Ridge'
@@ -355,15 +355,145 @@ export const marineSpecies: MarineSpecies[] = [
   {
     id: 'SPEC-08',
     name: 'Deep Sea Dragonfish',
-    scientificName: 'Stomiidae family',
+    scientificName: 'Stomias boa',
     status: 'Least Concern',
     observedCount: 140,
     depthRange: '1,000 - 5,000 m',
     lastDetected: '5 hours ago',
-    imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80',
     aiAccuracy: 91,
     populationTrend: 'Stable',
     primaryHabitat: 'Sector 6 Antarctic Basin Vents'
+  },
+  {
+    id: 'SPEC-09',
+    name: 'Scalloped Hammerhead Shark',
+    scientificName: 'Sphyrna lewini',
+    status: 'Critically Endangered',
+    observedCount: 23,
+    depthRange: '0 - 1,000 m',
+    lastDetected: '15 minutes ago',
+    imageUrl: 'https://images.unsplash.com/photo-1560275619-4662e36fa65c?auto=format&fit=crop&w=800&q=80',
+    aiAccuracy: 97,
+    populationTrend: 'Declining',
+    primaryHabitat: 'Sector 3 Coral Sea Seamounts'
+  },
+  {
+    id: 'SPEC-10',
+    name: 'Hawksbill Sea Turtle',
+    scientificName: 'Eretmochelys imbricata',
+    status: 'Critically Endangered',
+    observedCount: 31,
+    depthRange: '0 - 150 m',
+    lastDetected: '45 minutes ago',
+    imageUrl: 'https://images.unsplash.com/photo-1518467166778-b88f373ffec7?auto=format&fit=crop&w=800&q=80',
+    aiAccuracy: 95,
+    populationTrend: 'Declining',
+    primaryHabitat: 'Sector 5 Chagos Trench Atolls'
+  },
+  {
+    id: 'SPEC-11',
+    name: 'Orca (Killer Whale)',
+    scientificName: 'Orcinus orca',
+    status: 'Data Deficient',
+    observedCount: 19,
+    depthRange: '0 - 1,000 m',
+    lastDetected: '1 hour ago',
+    imageUrl: 'https://images.unsplash.com/photo-1568430460464-02e1dc18458c?auto=format&fit=crop&w=800&q=80',
+    aiAccuracy: 99,
+    populationTrend: 'Stable',
+    primaryHabitat: 'Sector 7 Arctic Fram Strait'
+  },
+  {
+    id: 'SPEC-12',
+    name: 'Giant Isopod',
+    scientificName: 'Bathynomus giganteus',
+    status: 'Least Concern',
+    observedCount: 57,
+    depthRange: '170 - 2,140 m',
+    lastDetected: '2 hours ago',
+    imageUrl: 'https://images.unsplash.com/photo-1545671913-b89ac1b4ac10?auto=format&fit=crop&w=800&q=80',
+    aiAccuracy: 92,
+    populationTrend: 'Stable',
+    primaryHabitat: 'Sector 10 Gulf of Mexico Deepwater'
+  },
+  {
+    id: 'SPEC-13',
+    name: 'Ocean Sunfish (Mola Mola)',
+    scientificName: 'Mola mola',
+    status: 'Vulnerable',
+    observedCount: 38,
+    depthRange: '0 - 840 m',
+    lastDetected: '3 hours ago',
+    imageUrl: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80',
+    aiAccuracy: 94,
+    populationTrend: 'Declining',
+    primaryHabitat: 'Sector 2 North Atlantic Sargasso Sea'
+  },
+  {
+    id: 'SPEC-14',
+    name: 'Narwhal',
+    scientificName: 'Monodon monoceros',
+    status: 'Least Concern',
+    observedCount: 26,
+    depthRange: '0 - 1,500 m',
+    lastDetected: '4 hours ago',
+    imageUrl: 'https://images.unsplash.com/photo-1568430460464-02e1dc18458c?auto=format&fit=crop&w=800&q=80',
+    aiAccuracy: 96,
+    populationTrend: 'Stable',
+    primaryHabitat: 'Sector 7 Arctic Gateway Basin'
+  },
+  {
+    id: 'SPEC-15',
+    name: 'Green Sea Turtle',
+    scientificName: 'Chelonia mydas',
+    status: 'Endangered',
+    observedCount: 74,
+    depthRange: '0 - 110 m',
+    lastDetected: '5 hours ago',
+    imageUrl: 'https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?auto=format&fit=crop&w=800&q=80',
+    aiAccuracy: 97,
+    populationTrend: 'Increasing',
+    primaryHabitat: 'Sector 5 Indian Ocean Reserves'
+  },
+  {
+    id: 'SPEC-16',
+    name: 'Beluga Whale',
+    scientificName: 'Delphinapterus leucas',
+    status: 'Near Threatened',
+    observedCount: 49,
+    depthRange: '0 - 900 m',
+    lastDetected: '6 hours ago',
+    imageUrl: 'https://images.unsplash.com/photo-1568430460464-02e1dc18458c?auto=format&fit=crop&w=800&q=80',
+    aiAccuracy: 95,
+    populationTrend: 'Stable',
+    primaryHabitat: 'Sector 7 Arctic Basin Ice Edges'
+  },
+  {
+    id: 'SPEC-17',
+    name: 'Spotted Eagle Ray',
+    scientificName: 'Aetobatus narinari',
+    status: 'Endangered',
+    observedCount: 33,
+    depthRange: '0 - 80 m',
+    lastDetected: '7 hours ago',
+    imageUrl: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80',
+    aiAccuracy: 94,
+    populationTrend: 'Declining',
+    primaryHabitat: 'Sector 3 Coral Slope Reef System'
+  },
+  {
+    id: 'SPEC-18',
+    name: 'Vampire Squid',
+    scientificName: 'Vampyroteuthis infernalis',
+    status: 'Least Concern',
+    observedCount: 16,
+    depthRange: '600 - 1,200 m',
+    lastDetected: '8 hours ago',
+    imageUrl: 'https://images.unsplash.com/photo-1545671913-b89ac1b4ac10?auto=format&fit=crop&w=800&q=80',
+    aiAccuracy: 90,
+    populationTrend: 'Stable',
+    primaryHabitat: 'Sector 1 Mariana Abyssal Zone'
   }
 ];
 
