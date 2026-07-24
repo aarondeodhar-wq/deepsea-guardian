@@ -12,13 +12,11 @@
 
 @layer base {
   :root {
-    /* Day Mode — Clean Ocean Mist */
+    /* Day Mode */
     --background: 210 30% 97%;
     --foreground: 220 30% 8%;
     --card: 0 0% 100%;
     --card-foreground: 220 30% 8%;
-
-    /* Accent Colors — Day */
     --accent-teal: #0ea5e9;
     --accent-emerald: #10b981;
     --accent-violet: #8b5cf6;
@@ -26,16 +24,21 @@
     --accent-rose: #f43f5e;
     --accent-cyan: #06b6d4;
     --accent-indigo: #6366f1;
+    /* Text tokens — day */
+    --txt-primary:   #0a0f1e;
+    --txt-secondary: rgba(10,15,30,0.62);
+    --txt-muted:     rgba(10,15,30,0.40);
+    --txt-faint:     rgba(10,15,30,0.26);
+    /* Inner divider — day */
+    --inner-border:  rgba(10,15,30,0.08);
   }
 
   .dark {
-    /* Night Mode — Deep Ocean Multicolor */
-    --background: 220 22% 9%;        /* Rich deep navy, not pure grey */
+    /* Night Mode */
+    --background: 220 22% 9%;
     --foreground: 210 20% 95%;
     --card: 218 24% 13%;
     --card-foreground: 210 20% 95%;
-
-    /* Accent Colors — Night (vibrant, not all blue) */
     --accent-teal: #2dd4bf;
     --accent-emerald: #34d399;
     --accent-violet: #a78bfa;
@@ -43,6 +46,13 @@
     --accent-rose: #fb7185;
     --accent-cyan: #22d3ee;
     --accent-indigo: #818cf8;
+    /* Text tokens — night */
+    --txt-primary:   #f0f4ff;
+    --txt-secondary: rgba(240,244,255,0.58);
+    --txt-muted:     rgba(240,244,255,0.36);
+    --txt-faint:     rgba(240,244,255,0.22);
+    /* Inner divider — night */
+    --inner-border:  rgba(255,255,255,0.06);
   }
 }
 
@@ -53,10 +63,11 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Body MUST be transparent — the BackgroundCanvas fixed layer provides the bg */
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
     'Segoe UI', Roboto, sans-serif;
-  background-color: #f0f5fa;
+  background-color: transparent !important;
   color: #0a0f1e;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -65,7 +76,7 @@ body {
 
 .dark body,
 .dark {
-  background-color: #0d1117;
+  background-color: transparent !important; /* Canvas orbs provide the background */
   color: #e8edf5;
 }
 
@@ -106,53 +117,55 @@ body {
 
 /* ===================================================
    APPLE-GRADE GLASSMORPHISM SYSTEM
-   Both modes — blurs against the BackgroundCanvas orbs
+   Body is transparent — canvas orbs show through glass
    =================================================== */
 
-/* ── DAY MODE glass (white frosted) ── */
+/* ── DAY MODE glass-panel (white frosted — pastel orbs tint through) ── */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.60);
-  backdrop-filter: blur(40px) saturate(200%) brightness(1.05);
-  -webkit-backdrop-filter: blur(40px) saturate(200%) brightness(1.05);
-  border: 1px solid rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(48px) saturate(220%) brightness(1.08);
+  -webkit-backdrop-filter: blur(48px) saturate(220%) brightness(1.08);
+  border: 1px solid rgba(255, 255, 255, 0.65);
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.06),
+    0 8px 40px rgba(0, 0, 0, 0.08),
     0 2px 8px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    inset 0 1px 0 rgba(255, 255, 255, 0.90),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.02);
 }
 
-/* ── NIGHT MODE glass (dark frosted) ── */
+/* ── NIGHT MODE glass-panel (dark frosted — vibrant orbs tint through) ── */
 .dark .glass-panel {
-  background: rgba(4, 8, 20, 0.55);
-  backdrop-filter: blur(40px) saturate(180%) brightness(1.1);
-  -webkit-backdrop-filter: blur(40px) saturate(180%) brightness(1.1);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(4, 8, 20, 0.45);
+  backdrop-filter: blur(48px) saturate(200%) brightness(1.15);
+  -webkit-backdrop-filter: blur(48px) saturate(200%) brightness(1.15);
+  border: 1px solid rgba(255, 255, 255, 0.09);
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 8px 40px rgba(0, 0, 0, 0.55),
     0 2px 8px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
 }
 
-/* ── DAY MODE card (lighter frosted) ── */
+/* ── DAY MODE glass-card (lighter layer 2 frosted) ── */
 .glass-card {
-  background: rgba(255, 255, 255, 0.70);
-  backdrop-filter: blur(24px) saturate(180%) brightness(1.03);
-  -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.03);
-  border: 1px solid rgba(255, 255, 255, 0.80);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(28px) saturate(200%) brightness(1.05);
+  -webkit-backdrop-filter: blur(28px) saturate(200%) brightness(1.05);
+  border: 1px solid rgba(255, 255, 255, 0.72);
   box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    0 4px 24px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
 }
 
-/* ── NIGHT MODE card (dark frosted) ── */
+/* ── NIGHT MODE glass-card (dark layer 2 frosted) ── */
 .dark .glass-card {
-  background: rgba(6, 12, 24, 0.55);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(6, 12, 26, 0.50);
+  backdrop-filter: blur(24px) saturate(180%) brightness(1.12);
+  -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.12);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    0 4px 24px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 /* Teal-tinted glass */
