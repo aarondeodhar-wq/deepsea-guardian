@@ -147,7 +147,7 @@ export const Navbar: React.FC = () => {
       />
 
       {/* ─── STICKY WRAPPER: Telemetry bar + Nav stuck together at top ─── */}
-      <div className="sticky top-0 z-40 w-full flex flex-col overflow-x-hidden">
+      <div className="sticky top-0 z-40 w-full flex flex-col">
 
       {/* ─── TELEMETRY STATUS TICKER ─── */}
       <div className="w-full text-[11px] font-mono py-1.5 px-4 hidden md:flex items-center justify-between overflow-hidden" style={{ background: '#04080f', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
@@ -172,7 +172,7 @@ export const Navbar: React.FC = () => {
 
       {/* ─── MAIN NAVBAR ─── */}
       <header
-        className={`w-full overflow-x-hidden transition-all duration-300 ${
+        className={`w-full transition-all duration-300 ${
           scrolled
             ? 'glass-panel border-b border-white/10 shadow-xl'
             : 'bg-[#06090f]/90 backdrop-blur-xl border-b border-white/5'

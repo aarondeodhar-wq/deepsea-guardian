@@ -19,8 +19,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark overflow-x-hidden">
-      <body className="min-h-screen text-slate-900 dark:text-slate-100 font-sans antialiased flex flex-col overflow-x-hidden relative">
+    <html lang="en" className="dark">
+      {/* overflow-x-clip prevents horizontal scroll without breaking position:sticky on children */}
+      <body className="min-h-screen text-slate-900 dark:text-slate-100 font-sans antialiased flex flex-col relative overflow-x-clip">
         <AuthProvider>
           <ThemeProvider>
             {/* Theme-aware color orb canvas — what glass panels blur against */}

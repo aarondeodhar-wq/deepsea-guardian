@@ -15,49 +15,52 @@ import {
   Newspaper,
   Activity,
   RefreshCw,
+  Globe,
+  Satellite,
+  Compass,
 } from 'lucide-react';
 import { smartAlerts } from '@/lib/mock-data';
 
 const platformUpdates = [
   {
     id: 'upd-1',
-    title: 'Real GIS Satellite Map Upgraded',
-    desc: 'Leaflet integration now shows live ocean AIS vessel tracking layers.',
-    time: '2h ago',
-    tag: 'Feature',
-    color: '#2dd4bf',
-  },
-  {
-    id: 'upd-2',
-    title: 'AI Vision Lab: 150+ Species Scans',
-    desc: 'Bio-acoustic neural model trained on 150 endangered marine species.',
-    time: '5h ago',
-    tag: 'AI',
-    color: '#a78bfa',
-  },
-  {
-    id: 'upd-3',
-    title: 'Drone Fleet Telemetry Upgraded',
-    desc: 'Battery meters, depth gauges & patrol speed indicators added.',
-    time: '1d ago',
-    tag: 'Hardware',
-    color: '#34d399',
-  },
-  {
-    id: 'upd-4',
-    title: 'Global Emergency Hotline Network',
-    desc: 'Added 12+ international Coast Guard crisis lines across 6 regions.',
-    time: '2d ago',
-    tag: 'Safety',
+    title: 'SAR Satellite Echo: 4.2 km² Oil Slick',
+    desc: 'Polar satellite radar intercepted unregistered tanker discharge in Sector 4.',
+    time: '8m ago',
+    tag: 'Live SAR Stream',
     color: '#fb7185',
   },
   {
-    id: 'upd-5',
-    title: 'Night Mode Multi-Color Palette',
-    desc: 'Dark mode now features teal, violet, emerald & amber accent zones.',
-    time: '3d ago',
-    tag: 'Design',
+    id: 'upd-2',
+    title: 'AUV DeepGuardian-Alpha Hydrophone Stream',
+    desc: 'Acoustic hydrophone recorded 192kHz Blue Whale spectrogram in Sector 5.',
+    time: '24m ago',
+    tag: 'Bio-Acoustic',
+    color: '#2dd4bf',
+  },
+  {
+    id: 'upd-3',
+    title: 'Microplastic Plume Density Spike (+34%)',
+    desc: 'Sargasso Sea gyre density surpassed 45,000 particles/m³. AUV swarm dispatched.',
+    time: '1h ago',
+    tag: 'AI Alert',
     color: '#fbbf24',
+  },
+  {
+    id: 'upd-4',
+    title: 'GIS Real-Time Leaflet Layer Active',
+    desc: 'Subsea bathymetry, AIS vessel tracking & sanctuaries enabled on interactive map.',
+    time: '2h ago',
+    tag: 'GIS System',
+    color: '#22d3ee',
+  },
+  {
+    id: 'upd-5',
+    title: '24/7 International Emergency Desk Live',
+    desc: 'Integrated 12+ emergency crisis hotlines with US, UN, EU, AU & JP coast guards.',
+    time: '4h ago',
+    tag: 'Emergency Desk',
+    color: '#a78bfa',
   },
 ];
 
@@ -71,7 +74,6 @@ export const NotificationCenter: React.FC = () => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const unreadCount = alerts.length;
 
-  // Close on outside click — not on mouse leave
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (
@@ -87,7 +89,6 @@ export const NotificationCenter: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClick);
   }, [isOpen]);
 
-  // Close on Escape
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setIsOpen(false);
@@ -106,42 +107,42 @@ export const NotificationCenter: React.FC = () => {
 
   return (
     <div className="relative">
-      {/* ── Bell Button ── */}
+      {/* ── Bell Trigger Button ── */}
       <button
         ref={buttonRef}
         onClick={() => setIsOpen((o) => !o)}
         className="relative p-2 rounded-xl ios-bubble"
         style={{
-          background: isOpen ? 'rgba(251,113,133,0.12)' : 'rgba(255,255,255,0.05)',
-          border: `1px solid ${isOpen ? 'rgba(251,113,133,0.25)' : 'rgba(255,255,255,0.08)'}`,
+          background: isOpen ? 'rgba(251,113,133,0.14)' : 'rgba(255,255,255,0.06)',
+          border: `1px solid ${isOpen ? 'rgba(251,113,133,0.3)' : 'rgba(255,255,255,0.1)'}`,
         }}
-        title="Live Alerts & Platform Updates"
+        title="Live Alerts & Mission Intel"
       >
         <Bell
           className="w-4 h-4"
-          style={{ color: unreadCount > 0 ? '#fb7185' : 'rgba(255,255,255,0.5)' }}
+          style={{ color: unreadCount > 0 ? '#fb7185' : 'rgba(255,255,255,0.6)' }}
         />
         {unreadCount > 0 && (
           <span
             className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-white font-black text-[9px] flex items-center justify-center animate-pulse"
-            style={{ background: '#fb7185', boxShadow: '0 0 8px rgba(251,113,133,0.5)' }}
+            style={{ background: '#fb7185', boxShadow: '0 0 8px rgba(251,113,133,0.6)' }}
           >
             {unreadCount}
           </span>
         )}
       </button>
 
-      {/* ── Notification Panel ── */}
+      {/* ── Notification Dropdown Panel ── */}
       {isOpen && (
         <div
           ref={panelRef}
-          className="absolute right-0 mt-2 w-80 sm:w-96 rounded-3xl overflow-hidden z-50 animate-slide-in"
+          className="absolute right-0 mt-2 w-80 sm:w-96 rounded-3xl overflow-hidden z-[100] animate-bubble"
           style={{
-            background: 'rgba(8, 14, 26, 0.95)',
-            backdropFilter: 'blur(40px) saturate(200%)',
-            WebkitBackdropFilter: 'blur(40px) saturate(200%)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            boxShadow: '0 24px 60px rgba(0,0,0,0.7), 0 8px 20px rgba(0,0,0,0.5)',
+            background: 'rgba(6, 12, 24, 0.96)',
+            backdropFilter: 'blur(50px) saturate(200%)',
+            WebkitBackdropFilter: 'blur(50px) saturate(200%)',
+            border: '1px solid rgba(255,255,255,0.12)',
+            boxShadow: '0 24px 70px rgba(0,0,0,0.8), 0 8px 24px rgba(0,0,0,0.6)',
           }}
         >
           {/* Header */}
@@ -151,7 +152,7 @@ export const NotificationCenter: React.FC = () => {
           >
             <div className="flex items-center gap-2">
               <Radio className="w-3.5 h-3.5 animate-pulse" style={{ color: '#fb7185' }} />
-              <span className="font-black text-sm text-white">Mission Intel</span>
+              <span className="font-black text-sm text-white">Live Mission Intel</span>
             </div>
             <div className="flex items-center gap-2">
               {tab === 'alerts' && unreadCount > 0 && (
@@ -159,8 +160,8 @@ export const NotificationCenter: React.FC = () => {
                   onClick={markAllRead}
                   className="text-[10px] font-bold px-2 py-0.5 rounded-full ios-spring"
                   style={{
-                    background: 'rgba(52,211,153,0.1)',
-                    border: '1px solid rgba(52,211,153,0.2)',
+                    background: 'rgba(52,211,153,0.12)',
+                    border: '1px solid rgba(52,211,153,0.25)',
                     color: '#34d399',
                   }}
                 >
@@ -170,9 +171,9 @@ export const NotificationCenter: React.FC = () => {
               <button
                 onClick={() => setIsOpen(false)}
                 className="w-6 h-6 rounded-full flex items-center justify-center ios-bubble"
-                style={{ background: 'rgba(255,255,255,0.06)' }}
+                style={{ background: 'rgba(255,255,255,0.08)' }}
               >
-                <X className="w-3.5 h-3.5 text-white/40" />
+                <X className="w-3.5 h-3.5 text-white/50" />
               </button>
             </div>
           </div>
@@ -183,8 +184,8 @@ export const NotificationCenter: React.FC = () => {
             style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
           >
             {([
-              { id: 'alerts', label: 'Alerts', icon: ShieldAlert, count: unreadCount, color: '#fb7185' },
-              { id: 'updates', label: 'Updates', icon: Sparkles, count: platformUpdates.length, color: '#2dd4bf' },
+              { id: 'alerts', label: 'Threat Alerts', icon: ShieldAlert, count: unreadCount, color: '#fb7185' },
+              { id: 'updates', label: 'Live News & Updates', icon: Sparkles, count: platformUpdates.length, color: '#2dd4bf' },
             ] as const).map(({ id, label, icon: Icon, count, color }) => (
               <button
                 key={id}
@@ -193,21 +194,22 @@ export const NotificationCenter: React.FC = () => {
                 style={
                   tab === id
                     ? {
-                        background: `${color}12`,
-                        border: `1px solid ${color}25`,
+                        background: `${color}16`,
+                        border: `1px solid ${color}30`,
                         color,
                       }
-                    : { color: 'rgba(255,255,255,0.3)' }
+                    : { color: 'rgba(255,255,255,0.4)' }
                 }
               >
-                <Icon className="w-3 h-3" />
+                <Icon className="w-3.5 h-3.5" />
                 <span>{label}</span>
                 <span
-                  className="text-[9px] font-black px-1.5 py-0.5 rounded-full"
-                  style={{
-                    background: tab === id ? `${color}20` : 'rgba(255,255,255,0.06)',
-                    color: tab === id ? color : 'rgba(255,255,255,0.3)',
-                  }}
+                  className="px-1.5 py-0.2 rounded-full text-[9px] font-black"
+                  style={
+                    tab === id
+                      ? { background: `${color}25`, color }
+                      : { background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)' }
+                  }
                 >
                   {count}
                 </span>
@@ -215,21 +217,16 @@ export const NotificationCenter: React.FC = () => {
             ))}
           </div>
 
-          {/* ── ALERTS TAB ── */}
-          {tab === 'alerts' && (
-            <div className="max-h-80 overflow-y-auto p-3 space-y-2">
-              {alerts.length === 0 ? (
-                <div className="py-8 text-center space-y-3">
-                  <div
-                    className="w-12 h-12 mx-auto rounded-2xl flex items-center justify-center"
-                    style={{ background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.2)' }}
-                  >
-                    <CheckCircle2 className="w-6 h-6" style={{ color: '#34d399' }} />
-                  </div>
-                  <div>
-                    <p className="font-bold text-sm text-white">All Clear</p>
-                    <p className="text-xs text-white/30 mt-0.5">No active subsea threats detected</p>
-                  </div>
+          {/* Content Area */}
+          <div className="max-h-80 overflow-y-auto p-3 space-y-2.5">
+            {tab === 'alerts' ? (
+              alerts.length === 0 ? (
+                <div className="py-8 text-center space-y-2">
+                  <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto animate-bounce" />
+                  <p className="text-xs font-bold text-white/80">All Threats Clear</p>
+                  <p className="text-[10px] text-white/40 max-w-[200px] mx-auto">
+                    AUV swarms reporting 0 active critical risks in monitored sectors.
+                  </p>
                 </div>
               ) : (
                 alerts.map((alert) => {
@@ -237,89 +234,105 @@ export const NotificationCenter: React.FC = () => {
                   return (
                     <div
                       key={alert.id}
-                      className="p-3 rounded-2xl space-y-1.5"
-                      style={{ background: s.bg, border: `1px solid ${s.border}` }}
+                      className="p-3 rounded-2xl border text-xs space-y-1.5 transition-all ios-spring"
+                      style={{ background: s.bg, borderColor: s.border }}
                     >
                       <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <AlertTriangle className="w-3.5 h-3.5 shrink-0" style={{ color: s.icon }} />
+                          <span className="font-bold text-white text-[11px]">{alert.title}</span>
+                        </div>
                         <span
-                          className="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider"
-                          style={{ color: s.icon }}
+                          className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded"
+                          style={{ background: `${s.icon}20`, color: s.icon }}
                         >
-                          {alert.severity === 'Critical' ? (
-                            <ShieldAlert className="w-3 h-3" />
-                          ) : (
-                            <AlertTriangle className="w-3 h-3" />
-                          )}
                           {alert.severity}
                         </span>
-                        <span className="text-[10px] text-white/25 font-mono">{alert.timestamp}</span>
                       </div>
-                      <p className="font-bold text-xs text-white">{alert.title}</p>
-                      <p className="text-[11px] text-white/45 leading-relaxed">{alert.description}</p>
-                      <Link
-                        href="/alerts"
-                        onClick={() => setIsOpen(false)}
-                        className="inline-flex items-center gap-1 text-[10px] font-bold mt-1"
-                        style={{ color: s.icon }}
-                      >
-                        Inspect Alert <ArrowRight className="w-3 h-3" />
-                      </Link>
+
+                      <p className="text-[11px] text-white/60 leading-normal">{alert.description}</p>
+
+                      <div className="flex items-center justify-between text-[10px] text-white/40 pt-1 font-mono">
+                        <span>📍 {alert.location}</span>
+                        <span>{alert.timestamp}</span>
+                      </div>
+
+                      <div className="pt-1.5 flex items-center justify-between">
+                        <span
+                          className="text-[10px] font-mono font-bold"
+                          style={{ color: '#2dd4bf' }}
+                        >
+                          Action: {alert.recommendedAction}
+                        </span>
+                        <Link
+                          href="/alerts"
+                          onClick={() => setIsOpen(false)}
+                          className="text-[10px] font-bold flex items-center gap-1 hover:underline"
+                          style={{ color: s.icon }}
+                        >
+                          Details <ArrowRight className="w-3 h-3" />
+                        </Link>
+                      </div>
                     </div>
                   );
                 })
-              )}
-            </div>
-          )}
-
-          {/* ── UPDATES TAB ── */}
-          {tab === 'updates' && (
-            <div className="max-h-80 overflow-y-auto p-3 space-y-2">
-              {platformUpdates.map((upd) => (
+              )
+            ) : (
+              /* Updates & Live News Feed */
+              platformUpdates.map((item) => (
                 <div
-                  key={upd.id}
-                  className="p-3 rounded-2xl flex items-start gap-3"
+                  key={item.id}
+                  className="p-3 rounded-2xl text-xs space-y-1.5 transition-all ios-spring"
                   style={{
-                    background: `${upd.color}06`,
-                    border: `1px solid ${upd.color}15`,
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.06)',
                   }}
                 >
-                  <div
-                    className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
-                    style={{ background: `${upd.color}15`, border: `1px solid ${upd.color}25` }}
-                  >
-                    <Zap className="w-3.5 h-3.5" style={{ color: upd.color }} />
+                  <div className="flex items-center justify-between">
+                    <span
+                      className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full"
+                      style={{
+                        background: `${item.color}15`,
+                        border: `1px solid ${item.color}30`,
+                        color: item.color,
+                      }}
+                    >
+                      {item.tag}
+                    </span>
+                    <span className="text-[10px] text-white/40 font-mono">{item.time}</span>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2 mb-0.5">
-                      <span
-                        className="text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full"
-                        style={{ background: `${upd.color}15`, color: upd.color }}
-                      >
-                        {upd.tag}
-                      </span>
-                      <span className="text-[10px] text-white/25 font-mono shrink-0">{upd.time}</span>
-                    </div>
-                    <p className="font-bold text-xs text-white">{upd.title}</p>
-                    <p className="text-[11px] text-white/40 mt-0.5 leading-relaxed">{upd.desc}</p>
-                  </div>
+
+                  <h4 className="font-bold text-white text-[11px]">{item.title}</h4>
+                  <p className="text-[11px] text-white/60 leading-normal">{item.desc}</p>
                 </div>
-              ))}
-            </div>
-          )}
+              ))
+            )}
+          </div>
 
           {/* Footer */}
           <div
-            className="px-4 py-3"
-            style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
+            className="p-3 flex items-center justify-between text-xs"
+            style={{
+              background: 'rgba(0,0,0,0.3)',
+              borderTop: '1px solid rgba(255,255,255,0.06)',
+            }}
           >
             <Link
               href="/alerts"
               onClick={() => setIsOpen(false)}
-              className="text-xs font-bold flex items-center justify-center gap-1.5 ios-spring"
-              style={{ color: 'rgba(255,255,255,0.3)' }}
+              className="text-[11px] font-bold flex items-center gap-1.5 ios-spring"
+              style={{ color: '#2dd4bf' }}
             >
-              <Activity className="w-3.5 h-3.5" />
-              Open Full Alert Center →
+              <span>View Full Threat Dashboard</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+
+            <Link
+              href="/reports"
+              onClick={() => setIsOpen(false)}
+              className="text-[11px] font-medium text-white/40 hover:text-white/80"
+            >
+              Export Report
             </Link>
           </div>
         </div>

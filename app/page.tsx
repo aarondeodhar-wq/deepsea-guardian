@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   ShieldCheck, ShieldAlert, Activity, Compass, ArrowRight,
   CheckCircle2, Download, MapPin, Eye, Fish, Play, Radio,
   Cpu, Zap, Globe, Building2, Anchor, Navigation, Server,
-  Phone, Copy, Waves
+  Phone, Copy, Waves, ChevronUp, ChevronDown
 } from 'lucide-react';
 import {
   oceanSectors, aiDetections, marineSpecies,
@@ -23,12 +23,13 @@ const C = {
 };
 
 /* ─── SECTION — glass-panel + colored accent border ─── */
-function Section({ children, accent = C.teal, className = '' }: {
-  children: React.ReactNode; accent?: string; className?: string;
+function Section({ id, children, accent = C.teal, className = '' }: {
+  id?: string; children: React.ReactNode; accent?: string; className?: string;
 }) {
   return (
     <section
-      className={`p-6 sm:p-10 rounded-3xl space-y-6 glass-panel transition-all ${className}`}
+      id={id}
+      className={`p-6 sm:p-10 rounded-3xl space-y-6 glass-panel transition-all scroll-mt-24 ${className}`}
       style={{ border: `1px solid ${accent}22`, boxShadow: `0 8px 40px rgba(0,0,0,0.18), inset 0 1px 0 ${accent}14` }}
     >
       {children}
@@ -78,10 +79,49 @@ function ActionBtn({ href, onClick, children, accent = C.teal, variant = 'outlin
 /* ─── DIVIDER using CSS var ─── */
 const divStyle = { borderTop: '1px solid var(--inner-border)' } as React.CSSProperties;
 
+const sectionsList = [
+  { id: 'hero',               label: 'Overview',      color: C.teal    },
+  { id: 'bathymetry',         label: 'Bathymetry',    color: C.cyan    },
+  { id: 'sector-matrix',      label: 'Basin Grid',    color: C.emerald },
+  { id: 'vision-lab',         label: 'Vision Lab',    color: C.rose    },
+  { id: 'biodiversity-hub',   label: 'Biodiversity',  color: C.amber   },
+  { id: 'hardware-specs',     label: 'Hardware',      color: C.violet  },
+  { id: 'partners-consortium',label: 'Partners',      color: C.indigo  },
+  { id: 'emergency-hotlines', label: 'Emergency 24/7',color: C.rose    },
+];
+
 export default function HomePage() {
   const [isDeployModalOpen, setIsDeployModalOpen] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState<string | null>(null);
   const [copiedNumber, setCopiedNumber] = useState<string | null>(null);
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
+  const [activeSection, setActiveSection] = useState('hero');
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPos = window.scrollY + 200;
+      for (let i = sectionsList.length - 1; i >= 0; i--) {
+        const el = document.getElementById(sectionsList[i].id);
+        if (el && el.offsetTop <= scrollPos) {
+          setActiveSection(sectionsList[i].id);
+          break;
+        }
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const handleImageError = (id: string) => {
+    setFailedImages((prev) => ({ ...prev, [id]: true }));
+  };
 
   const handleDownloadCSV = () => {
     exportDatasetAsFile('Global_Ocean_Health_Telemetry', 'CSV');
@@ -118,12 +158,51 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="space-y-6 sm:space-y-8 py-6 sm:py-10">
+    <div className="space-y-6 sm:space-y-8 py-6 sm:py-10 relative">
       <DroneDeploymentModal isOpen={isDeployModalOpen} onClose={() => setIsDeployModalOpen(false)} />
+
+      {/* ── Floating Side Section Quick Jump Bar ── */}
+      <div className="fixed right-3 top-1/2 -translate-y-1/2 z-30 hidden xl:flex flex-col items-end gap-2 pointer-events-auto">
+        <div
+          className="p-2 rounded-2xl flex flex-col gap-1.5 backdrop-blur-2xl border shadow-2xl transition-all"
+          style={{
+            background: 'rgba(4, 8, 20, 0.75)',
+            borderColor: 'rgba(255, 255, 255, 0.08)',
+          }}
+        >
+          {sectionsList.map((sec) => {
+            const isActive = activeSection === sec.id;
+            return (
+              <button
+                key={sec.id}
+                onClick={() => scrollToSection(sec.id)}
+                className="group relative flex items-center gap-2 px-2 py-1 rounded-xl text-[10px] font-bold transition-all ios-spring"
+                style={
+                  isActive
+                    ? { background: `${sec.color}20`, border: `1px solid ${sec.color}40`, color: sec.color }
+                    : { color: 'rgba(255,255,255,0.4)' }
+                }
+              >
+                <span
+                  className="w-2 h-2 rounded-full transition-all"
+                  style={{
+                    background: isActive ? sec.color : 'rgba(255,255,255,0.2)',
+                    boxShadow: isActive ? `0 0 8px ${sec.color}` : 'none',
+                  }}
+                />
+                <span className="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  {sec.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* ══ HERO ══ */}
       <section
-        className="relative p-8 sm:p-14 rounded-3xl text-center space-y-7 overflow-hidden glass-panel"
+        id="hero"
+        className="relative p-8 sm:p-14 rounded-3xl text-center space-y-7 overflow-hidden glass-panel scroll-mt-24"
         style={{ border: '1px solid rgba(45,212,191,0.20)', boxShadow: '0 8px 60px rgba(0,0,0,0.2), inset 0 1px 0 rgba(45,212,191,0.12)' }}
       >
         <div className="relative z-10 space-y-7">
@@ -178,7 +257,7 @@ export default function HomePage() {
       </section>
 
       {/* ══ BATHYMETRY (cyan) ══ */}
-      <Section accent={C.cyan}>
+      <Section id="bathymetry" accent={C.cyan}>
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
             <Pill label="BENTHIC TRENCH DEPTH PROFILER" color={C.cyan} />
@@ -207,7 +286,7 @@ export default function HomePage() {
       </Section>
 
       {/* ══ BASIN MATRIX (emerald) ══ */}
-      <Section accent={C.emerald}>
+      <Section id="sector-matrix" accent={C.emerald}>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <Pill label="REAL-TIME BASIN MATRIX" color={C.emerald} />
@@ -254,7 +333,7 @@ export default function HomePage() {
       </Section>
 
       {/* ══ VISION LAB (rose) ══ */}
-      <Section accent={C.rose}>
+      <Section id="vision-lab" accent={C.rose}>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6" style={divStyle}>
           <div>
             <Pill label="YOLOV8 SUBSEA RETICLES" color={C.rose} />
@@ -268,15 +347,29 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {aiDetections.slice(0, 2).map((detection) => (
             <Card key={detection.id} accent={C.rose} className="overflow-hidden !p-0">
-              <div className="relative h-48 sm:h-56 w-full">
-                <img src={detection.imageUrl} alt={detection.title} className="w-full h-full object-cover" loading="lazy" />
-                <div className="absolute inset-0 p-4 flex flex-col justify-between"
-                  style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.75) 100%)' }}>
-                  <span className="px-2.5 py-1 rounded-lg text-white font-mono font-black text-[10px] w-max" style={{ background: C.rose }}>
+              <div className="relative h-48 sm:h-56 w-full bg-slate-900 overflow-hidden">
+                {!failedImages[detection.id] ? (
+                  <img
+                    src={detection.imageUrl}
+                    alt={detection.title}
+                    onError={() => handleImageError(detection.id)}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-slate-950 via-rose-950/40 to-slate-950 flex flex-col items-center justify-center p-6 text-center">
+                    <Waves className="w-8 h-8 text-rose-400 animate-pulse mb-1.5" />
+                    <span className="font-bold text-xs text-white">{detection.title}</span>
+                    <span className="text-[10px] text-rose-300 font-mono mt-0.5">{detection.sectorName}</span>
+                  </div>
+                )}
+                <div className="absolute inset-0 p-4 flex flex-col justify-between pointer-events-none"
+                  style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.8) 100%)' }}>
+                  <span className="px-2.5 py-1 rounded-lg text-white font-mono font-black text-[10px] w-max pointer-events-auto" style={{ background: C.rose }}>
                     {detection.category.toUpperCase()}: {detection.confidence}% MATCH
                   </span>
-                  <div className="p-2 rounded-xl text-[10px] font-mono flex items-center justify-between"
-                    style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <div className="p-2 rounded-xl text-[10px] font-mono flex items-center justify-between pointer-events-auto"
+                    style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.08)' }}>
                     <span style={{ color: C.rose }} className="font-bold">BOUNDS: {detection.boundingBox}</span>
                     <span className="text-white/60">{detection.depth}m Depth</span>
                   </div>
@@ -292,7 +385,7 @@ export default function HomePage() {
       </Section>
 
       {/* ══ BIODIVERSITY (amber) ══ */}
-      <Section accent={C.amber}>
+      <Section id="biodiversity-hub" accent={C.amber}>
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
             <Pill label="BIO-ACOUSTIC SPECTROGRAM TELEMETRY" color={C.amber} />
@@ -310,9 +403,23 @@ export default function HomePage() {
             const statusColor = species.status === 'Endangered' ? C.rose : species.status === 'Vulnerable' ? C.amber : C.emerald;
             return (
               <Card key={species.id} accent={C.amber} className="space-y-3">
-                <div className="relative h-32 w-full rounded-xl overflow-hidden">
-                  <img src={species.imageUrl} alt={species.name} className="w-full h-full object-cover" loading="lazy" />
-                  <span className="absolute top-2 left-2 px-2 py-0.5 rounded text-[9px] font-black"
+                <div className="relative h-32 w-full rounded-xl overflow-hidden bg-slate-900">
+                  {!failedImages[species.id] ? (
+                    <img
+                      src={species.imageUrl}
+                      alt={species.name}
+                      onError={() => handleImageError(species.id)}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-slate-900 via-amber-950/40 to-slate-900 flex flex-col items-center justify-center p-3 text-center">
+                      <Fish className="w-6 h-6 text-amber-400 animate-pulse mb-1" />
+                      <span className="font-bold text-xs text-white">{species.name}</span>
+                      <span className="text-[9px] text-amber-300 font-mono italic">{species.scientificName}</span>
+                    </div>
+                  )}
+                  <span className="absolute top-2 left-2 px-2 py-0.5 rounded text-[9px] font-black z-10"
                     style={{ background: `${statusColor}dd`, color: '#040d14' }}>{species.status}</span>
                 </div>
                 <div>
@@ -330,7 +437,7 @@ export default function HomePage() {
       </Section>
 
       {/* ══ HARDWARE (violet) ══ */}
-      <Section accent={C.violet}>
+      <Section id="hardware-specs" accent={C.violet}>
         <div className="text-center space-y-2">
           <Pill label="HARDWARE ARCHITECTURE" color={C.violet} />
           <h2 className="text-xl sm:text-3xl font-black" style={{ color: 'var(--txt-primary)' }}>Multi-Modal Subsea Sensor Swarm Specs</h2>
@@ -369,7 +476,7 @@ export default function HomePage() {
       </Section>
 
       {/* ══ PARTNERS (indigo) ══ */}
-      <Section accent={C.indigo}>
+      <Section id="partners-consortium" accent={C.indigo}>
         <div className="text-center space-y-1">
           <Pill label="INTERGOVERNMENTAL CONSORTIUM" color={C.indigo} />
           <h2 className="text-lg sm:text-2xl font-black" style={{ color: 'var(--txt-primary)' }}>Institutional Research &amp; Conservation Partners</h2>
@@ -405,7 +512,7 @@ export default function HomePage() {
       </Section>
 
       {/* ══ EMERGENCY (rose) ══ */}
-      <Section accent={C.rose}>
+      <Section id="emergency-hotlines" accent={C.rose}>
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6" style={divStyle}>
           <div className="space-y-1">
             <div className="flex items-center gap-2">

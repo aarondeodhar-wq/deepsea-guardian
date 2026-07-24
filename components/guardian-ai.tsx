@@ -9,11 +9,15 @@ import {
 import { searchKnowledgeBase, AI_KNOWLEDGE_BASE } from '@/lib/ai-knowledge-base';
 import { useAuth } from '@/lib/auth-context';
 
+import Link from 'next/link';
+
 interface ChatMessage {
   id: string;
   sender: 'user' | 'ai';
   text: string;
   topic?: string;
+  actionLink?: string;
+  actionLabel?: string;
   timestamp: string;
 }
 
@@ -98,6 +102,8 @@ export const GuardianAI: React.FC = () => {
           ? match.answer
           : `Scanning subsea index for "${text}"... Sector 4 Mid-Atlantic Ridge remains Critical (Health 38/100) — 45,000 particles/m³ microplastics detected. AUV DeepGuardian-Alpha patrolling.`,
         topic: match?.topic,
+        actionLink: match?.actionLink,
+        actionLabel: match?.actionLabel,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, aiMsg]);
@@ -107,8 +113,8 @@ export const GuardianAI: React.FC = () => {
   };
 
   const quickChips = [
-    'Hello 👋', 'What is DeepSea Guardian?', 'Deploy AUV Drone',
-    'Download CSV data', 'Sector 4 critical?', 'Coast Guard Helpline',
+    'Hello 👋', 'Blue Whale 🐋', 'Leatherback Turtle 🐢', 'Deploy AUV Drone',
+    'GIS Map', 'Download CSV', 'Sector 4 critical?', 'Coast Guard Line'
   ];
 
   const categories = [
@@ -354,6 +360,21 @@ export const GuardianAI: React.FC = () => {
                           </span>
                         )}
                         <p className="leading-relaxed whitespace-pre-line">{msg.text}</p>
+                        {msg.actionLink && (
+                          <Link
+                            href={msg.actionLink}
+                            onClick={() => setIsOpen(false)}
+                            className="inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-xl text-[10px] font-bold ios-spring"
+                            style={{
+                              background: `${ACCENT}18`,
+                              border: `1px solid ${ACCENT}35`,
+                              color: ACCENT,
+                            }}
+                          >
+                            <span>{msg.actionLabel || 'Inspect Module'}</span>
+                            <span>→</span>
+                          </Link>
+                        )}
                         <span className="text-[9px] block text-right mt-1.5 opacity-40 font-mono">
                           {msg.timestamp}
                         </span>
