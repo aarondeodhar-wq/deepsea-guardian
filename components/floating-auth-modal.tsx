@@ -165,12 +165,12 @@ export const FloatingAuthModal: React.FC<Props> = ({ isOpen, onClose, initialTab
           }}
         />
 
-        {/* Close button — outside overflow container so it's never clipped */}
+        {/* Close button — positioned cleanly inside top-4 right-4 */}
         <button
           onClick={onClose}
           aria-label="Close sign in modal"
-          className="absolute -top-3 -right-3 w-9 h-9 rounded-full flex items-center justify-center ios-bubble z-20 shadow-xl"
-          style={{ background: 'rgba(251,113,133,0.15)', border: '1px solid rgba(251,113,133,0.25)', color: '#fb7185' }}
+          className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center ios-bubble z-20 transition-all"
+          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.7)' }}
         >
           <X className="w-4 h-4" />
         </button>
@@ -209,16 +209,16 @@ export const FloatingAuthModal: React.FC<Props> = ({ isOpen, onClose, initialTab
               <button
                 key={t}
                 onClick={() => { setTab(t); setError(''); }}
-                className="flex-1 py-2 rounded-xl text-xs font-bold transition-all duration-300 ios-spring"
+                className="flex-1 py-2.5 rounded-xl text-xs font-black transition-all duration-300 ios-spring"
                 style={
                   tab === t
                     ? {
-                        background: 'linear-gradient(135deg, rgba(45,212,191,0.2), rgba(6,182,212,0.15))',
-                        border: '1px solid rgba(45,212,191,0.25)',
+                        background: 'linear-gradient(135deg, rgba(45,212,191,0.25), rgba(6,182,212,0.18))',
+                        border: '1px solid rgba(45,212,191,0.35)',
                         color: '#2dd4bf',
-                        boxShadow: '0 0 12px rgba(45,212,191,0.15)',
+                        boxShadow: '0 0 16px rgba(45,212,191,0.2)',
                       }
-                    : { color: 'rgba(255,255,255,0.3)' }
+                    : { color: 'rgba(240, 244, 255, 0.85)', background: 'transparent' }
                 }
               >
                 {t === 'login' ? 'Sign In' : 'Create Account'}

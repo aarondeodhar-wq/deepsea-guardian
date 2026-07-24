@@ -166,8 +166,8 @@ export default function HomePage() {
 
       {/* ── Floating Side Section Quick Jump Bar ── */}
       <div className="fixed right-3 top-1/2 -translate-y-1/2 z-30 hidden xl:flex flex-col items-end gap-2 pointer-events-auto">
-        <div className="p-2.5 rounded-2xl flex flex-col gap-1.5 glass-panel shadow-2xl transition-all border border-slate-300 dark:border-white/10">
-          <span className="text-[9px] font-mono font-black uppercase tracking-widest text-slate-500 dark:text-white/40 px-2 pb-1 border-b border-slate-200 dark:border-white/10">
+        <div className="p-3 rounded-2xl flex flex-col gap-1 glass-panel shadow-2xl transition-all border border-slate-200/80 dark:border-white/10">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-white/40 px-2 pb-1.5 border-b border-slate-200/60 dark:border-white/10">
             Navigation
           </span>
           {sectionsList.map((sec) => {
@@ -176,21 +176,21 @@ export default function HomePage() {
               <button
                 key={sec.id}
                 onClick={() => scrollToSection(sec.id)}
-                className="group relative flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all ios-spring"
+                className="group relative flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl text-xs transition-all ios-spring"
                 style={
                   isActive
-                    ? { background: `${sec.color}22`, border: `1px solid ${sec.color}40`, color: sec.color }
-                    : { color: 'var(--txt-primary)' }
+                    ? { background: `${sec.color}18`, border: `1px solid ${sec.color}35`, color: sec.color }
+                    : { color: 'var(--txt-secondary)' }
                 }
               >
                 <span
-                  className="w-2.5 h-2.5 rounded-full transition-all shrink-0"
+                  className="w-2 h-2 rounded-full transition-all shrink-0"
                   style={{
                     background: isActive ? sec.color : 'var(--txt-muted)',
-                    boxShadow: isActive ? `0 0 10px ${sec.color}` : 'none',
+                    boxShadow: isActive ? `0 0 8px ${sec.color}` : 'none',
                   }}
                 />
-                <span className="text-[11px] font-extrabold whitespace-nowrap">
+                <span className={`text-xs whitespace-nowrap tracking-tight ${isActive ? 'font-bold' : 'font-medium hover:text-slate-900 dark:hover:text-white'}`}>
                   {sec.label}
                 </span>
               </button>
