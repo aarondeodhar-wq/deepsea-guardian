@@ -174,8 +174,8 @@ export const Navbar: React.FC = () => {
       <header
         className={`w-full transition-all duration-300 ${
           scrolled
-            ? 'glass-panel border-b border-white/10 shadow-xl'
-            : 'bg-[#06090f]/90 backdrop-blur-xl border-b border-white/5'
+            ? 'glass-panel border-b border-slate-200 dark:border-white/10 shadow-xl'
+            : 'bg-white/70 dark:bg-[#06090f]/85 backdrop-blur-2xl border-b border-slate-200/60 dark:border-white/5'
         }`}
       >
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-2">
@@ -189,7 +189,7 @@ export const Navbar: React.FC = () => {
               <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#2dd4bf' }} />
             </div>
             <div className="hidden sm:flex flex-col leading-none">
-              <span className="font-black text-sm tracking-wider text-white">DEEPSEA</span>
+              <span className="font-black text-sm tracking-wider text-slate-900 dark:text-white">DEEPSEA</span>
               <span className="font-bold text-[10px] tracking-widest" style={{ color: '#2dd4bf' }}>GUARDIAN</span>
             </div>
           </Link>
@@ -210,15 +210,15 @@ export const Navbar: React.FC = () => {
                   href={link.href}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap ios-spring ${
                     isActive
-                      ? 'text-white'
-                      : 'text-white/50 hover:text-white/90'
+                      ? 'text-slate-900 dark:text-white font-extrabold'
+                      : 'text-slate-700 dark:text-white/60 hover:text-slate-900 dark:hover:text-white'
                   }`}
                   style={
                     isActive
                       ? {
-                          background: `linear-gradient(135deg, ${c}20, ${c}10)`,
-                          border: `1px solid ${c}30`,
-                          boxShadow: `0 0 12px ${c}20`,
+                          background: `linear-gradient(135deg, ${c}22, ${c}12)`,
+                          border: `1px solid ${c}40`,
+                          boxShadow: `0 0 12px ${c}25`,
                         }
                       : {}
                   }

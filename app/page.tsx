@@ -163,13 +163,7 @@ export default function HomePage() {
 
       {/* ── Floating Side Section Quick Jump Bar ── */}
       <div className="fixed right-3 top-1/2 -translate-y-1/2 z-30 hidden xl:flex flex-col items-end gap-2 pointer-events-auto">
-        <div
-          className="p-2 rounded-2xl flex flex-col gap-1.5 backdrop-blur-2xl border shadow-2xl transition-all"
-          style={{
-            background: 'rgba(4, 8, 20, 0.75)',
-            borderColor: 'rgba(255, 255, 255, 0.08)',
-          }}
-        >
+        <div className="p-2 rounded-2xl flex flex-col gap-1.5 glass-panel shadow-2xl transition-all border border-slate-200/80 dark:border-white/10">
           {sectionsList.map((sec) => {
             const isActive = activeSection === sec.id;
             return (
@@ -179,15 +173,15 @@ export default function HomePage() {
                 className="group relative flex items-center gap-2 px-2 py-1 rounded-xl text-[10px] font-bold transition-all ios-spring"
                 style={
                   isActive
-                    ? { background: `${sec.color}20`, border: `1px solid ${sec.color}40`, color: sec.color }
-                    : { color: 'rgba(255,255,255,0.4)' }
+                    ? { background: `${sec.color}22`, border: `1px solid ${sec.color}40`, color: sec.color }
+                    : { color: 'var(--txt-muted)' }
                 }
               >
                 <span
-                  className="w-2 h-2 rounded-full transition-all"
+                  className="w-2.5 h-2.5 rounded-full transition-all shrink-0"
                   style={{
-                    background: isActive ? sec.color : 'rgba(255,255,255,0.2)',
-                    boxShadow: isActive ? `0 0 8px ${sec.color}` : 'none',
+                    background: isActive ? sec.color : 'var(--txt-faint)',
+                    boxShadow: isActive ? `0 0 10px ${sec.color}` : 'none',
                   }}
                 />
                 <span className="opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
