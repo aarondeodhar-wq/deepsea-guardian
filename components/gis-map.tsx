@@ -1,151 +1,109 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
-import { 
-  Layers, 
-  Search, 
-  MapPin, 
-  Radio, 
-  Filter, 
-  ShieldAlert, 
-  TrendingUp, 
-  Eye, 
-  FileText, 
-  X, 
-  Compass,
-  Globe,
-  Grid,
-  Satellite,
-  Activity,
-  CheckCircle2,
-  Download,
-  Navigation,
-  Target
-} from 'lucide-react';
-import { oceanSectors, droneFleet, aiDetections, marineSpecies, OceanSector, exportDatasetAsFile } from '@/lib/mock-data';
+import Link from 'next/link';
+import { oceanSectors, OceanSector, exportDatasetAsFile } from '@/lib/mock-data';
+import { MapPin, Layers, Download, Compass, Filter, RefreshCw, X, ShieldAlert, ArrowRight, Activity, Thermometer, Droplets, Database } from 'lucide-react';
 
-// Dynamically import Leaflet components to prevent SSR errors
-const MapContainer = dynamic(
-  () => import('react-leaflet').then((mod) => mod.MapContainer),
-  { ssr: false }
-);
-const TileLayer = dynamic(
-  () => import('react-leaflet').then((mod) => mod.TileLayer),
-  { ssr: false }
-);
-const CircleMarker = dynamic(
-  () => import('react-leaflet').then((mod) => mod.CircleMarker),
-  { ssr: false }
-);
-const Popup = dynamic(
-  () => import('react-leaflet').then((mod) => mod.Popup),
-  { ssr: false }
-);
+interface GISMapProps {
+  initialSectorId?: string;
+  onSectorSelect?: (sector: OceanSector) => void;
+  heightClass?: string;
+}
 
-export const GISMap: React.FC = () => {
-  const [selectedSector, setSelectedSector] = useState<OceanSector | null>(oceanSectors[0]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [mounted, setMounted] = useState(false);
-  const [L, setL] = useState<any>(null);
-
-  // Map Tile Basemap Selector: Satellite vs Dark Carto vs Voyager Bathymetry
-  const [mapStyle, setMapStyle] = useState<'satellite' | 'dark' | 'voyager'>('satellite');
-
-  // Lat/Lng Grid Overlay Toggle
-  const [showGrid, setShowGrid] = useState(true);
-
-  // Scan Type Filter
-  const [selectedScanType, setSelectedScanType] = useState<string>('All');
-
-  // Layer Visibility Toggles
-  const [layers, setLayers] = useState({
-    pollution: true,
-    species: true,
-    coral: true,
-    drones: true,
-  });
+export const GISMap: React.FC<GISMapProps> = ({ 
+  initialSectorId = 'SEC-01',
+  onSectorSelect,
+  heightClass = 'h-[650px]'
+}) => {
+  const [selectedSector, setSelectedSector] = useState<OceanSector>(
+    oceanSectors.find(s => s.id === initialSectorId) || oceanSectors[0]
+  );
+  const [tileProvider, setTileProvider] = useState<'esri' | 'dark' | 'voyager'>('esri');
+  const [filterType, setFilterType] = useState<string>('All');
+  const [showGrid, setShowGrid] = useState<boolean>(true);
+  const [isMapLoaded, setIsMapLoaded] = useState<boolean>(false);
 
   useEffect(() => {
-    setMounted(true);
-    import('leaflet').then((leaflet) => {
-      setL(leaflet);
-    });
+    // Leaflet Dynamic Loading
+    if (typeof window !== 'undefined') {
+      const L = require('leaflet');
+      delete L.Icon.Default.prototype._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+      });
+      setIsMapLoaded(true);
+    }
   }, []);
 
-  const toggleLayer = (layerKey: keyof typeof layers) => {
-    setLayers((prev) => ({ ...prev, [layerKey]: !prev[layerKey] }));
+  const handleSectorClick = (sector: OceanSector) => {
+    setSelectedSector(sector);
+    if (onSectorSelect) onSectorSelect(sector);
   };
 
-  const filteredSectors = oceanSectors.filter(s => {
-    const matchesSearch = s.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          s.oceanBasin.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          s.id.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesScan = selectedScanType === 'All' || s.scanType === selectedScanType;
-    return matchesSearch && matchesScan;
-  });
-
-  const handleSectorDataDownload = (secName: string) => {
-    exportDatasetAsFile(`GIS_${secName.replace(/\s+/g, '_')}`, 'CSV');
+  const tileUrls = {
+    esri: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{y}/{x}{r}.png',
+    voyager: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{y}/{x}{r}.png',
   };
+
+  const filteredSectors = filterType === 'All' 
+    ? oceanSectors 
+    : oceanSectors.filter(s => s.scanType.toLowerCase().includes(filterType.toLowerCase()));
 
   return (
-    <div className="relative w-full h-[850px] md:h-[780px] rounded-3xl overflow-hidden glass-panel border border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col md:flex-row">
+    <div className={`relative w-full ${heightClass} rounded-3xl overflow-hidden border border-slate-300 dark:border-slate-800 shadow-2xl bg-slate-900 text-slate-100 flex flex-col md:flex-row`}>
       
-      {/* Sidebar Controls Panel */}
-      <div className="w-full md:w-80 p-4 bg-slate-100/95 dark:bg-slate-950/95 border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between z-20 shrink-0">
-        
+      {/* LEFT CONTROL PANEL - MATTE SLATE CHARCOAL GREY */}
+      <div className="w-full md:w-80 bg-slate-900 border-r border-slate-800 p-4 space-y-4 shrink-0 flex flex-col justify-between z-20">
         <div className="space-y-4">
           
-          <div className="flex items-center justify-between">
+          {/* Header */}
+          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
             <div className="flex items-center gap-2">
-              <Compass className="w-5 h-5 text-sky-500 animate-spin" style={{ animationDuration: '35s' }} />
-              <h3 className="font-bold text-sm text-slate-900 dark:text-white">Google Maps Ocean Pro</h3>
+              <MapPin className="w-5 h-5 text-slate-300" />
+              <h3 className="font-extrabold text-sm text-white">Ocean GIS Explorer</h3>
             </div>
-            <span className="text-[10px] px-2 py-0.5 rounded bg-sky-500/10 text-sky-700 dark:text-sky-300 font-mono font-bold border border-sky-500/20">
-              English Labels
+            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+              Live Satellite
             </span>
           </div>
 
-          {/* Search Box */}
-          <div className="relative">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search ocean basin or sector..."
-              className="w-full pl-9 pr-3 py-2 rounded-xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 text-xs focus:outline-none focus:border-sky-500"
-            />
-          </div>
-
-          {/* Map Tile Layer Selector */}
-          <div>
-            <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1">
-              <Satellite className="w-3.5 h-3.5 text-sky-500" />
-              <span>Google Maps Style View</span>
-            </p>
-            <div className="grid grid-cols-3 gap-1 rounded-xl bg-slate-200 dark:bg-slate-900 p-1 border border-slate-300 dark:border-slate-800 text-[10px] font-bold">
+          {/* Map Layer Provider Options Explainer */}
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-mono font-bold text-slate-300 uppercase tracking-wider block">
+              Map Style View:
+            </label>
+            <p className="text-[10px] text-slate-400">Switch satellite imagery basemaps:</p>
+            <div className="grid grid-cols-3 gap-1.5">
               <button
-                onClick={() => setMapStyle('satellite')}
-                className={`py-1.5 rounded-lg transition-all ${
-                  mapStyle === 'satellite' ? 'bg-sky-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                onClick={() => setTileProvider('esri')}
+                className={`py-2 rounded-xl text-xs font-bold transition-all border ${
+                  tileProvider === 'esri'
+                    ? 'bg-slate-800 text-white border-slate-600 shadow-md'
+                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
                 }`}
               >
                 Satellite
               </button>
               <button
-                onClick={() => setMapStyle('dark')}
-                className={`py-1.5 rounded-lg transition-all ${
-                  mapStyle === 'dark' ? 'bg-sky-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                onClick={() => setTileProvider('dark')}
+                className={`py-2 rounded-xl text-xs font-bold transition-all border ${
+                  tileProvider === 'dark'
+                    ? 'bg-slate-800 text-white border-slate-600 shadow-md'
+                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
                 }`}
               >
                 Dark Ocean
               </button>
               <button
-                onClick={() => setMapStyle('voyager')}
-                className={`py-1.5 rounded-lg transition-all ${
-                  mapStyle === 'voyager' ? 'bg-sky-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                onClick={() => setTileProvider('voyager')}
+                className={`py-2 rounded-xl text-xs font-bold transition-all border ${
+                  tileProvider === 'voyager'
+                    ? 'bg-slate-800 text-white border-slate-600 shadow-md'
+                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
                 }`}
               >
                 Voyager
@@ -153,264 +111,210 @@ export const GISMap: React.FC = () => {
             </div>
           </div>
 
-          {/* Scan Telemetry Type Filter */}
-          <div className="space-y-2">
+          {/* Sensor Filter Dropdown Explainer */}
+          <div className="space-y-1.5 pt-2 border-t border-slate-800">
             <div className="flex items-center justify-between">
-              <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Scan Telemetry Type:</label>
+              <label className="text-[11px] font-mono font-bold text-slate-300 uppercase tracking-wider">
+                Scan Telemetry Filter:
+              </label>
               <button
                 onClick={() => setShowGrid(!showGrid)}
-                className={`text-[10px] font-mono px-2 py-0.5 rounded border transition-colors flex items-center gap-1 ${
-                  showGrid ? 'bg-sky-500/20 text-sky-600 dark:text-sky-300 border-sky-500/40 font-bold' : 'text-slate-400 border-slate-700'
+                className={`text-[10px] font-bold px-2 py-0.5 rounded border transition-all ${
+                  showGrid ? 'bg-slate-800 text-white border-slate-700' : 'text-slate-400 border-slate-800'
                 }`}
               >
-                <Grid className="w-3 h-3" />
-                <span>Grid {showGrid ? 'ON' : 'OFF'}</span>
+                Grid {showGrid ? 'ON' : 'OFF'}
               </button>
             </div>
-
             <select
-              value={selectedScanType}
-              onChange={(e) => setSelectedScanType(e.target.value)}
-              className="w-full px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 text-xs font-semibold focus:outline-none focus:border-sky-500"
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+              className="w-full px-3 py-2 rounded-xl bg-slate-950 text-white border border-slate-800 text-xs font-bold focus:outline-none focus:border-slate-600"
             >
               <option value="All">All Scan Telemetry Types</option>
-              <option value="SAR Satellite Radar">SAR Satellite Radar</option>
-              <option value="Sonar Bathymetry">Sonar Bathymetry</option>
-              <option value="Benthic ROV Visual">Benthic ROV Visual</option>
-              <option value="Hydrophone Acoustic">Hydrophone Acoustic</option>
-              <option value="IoT Buoy Array">IoT Buoy Array</option>
+              <option value="AUV">AUV Optical Swarm Drones</option>
+              <option value="SAR">SAR Synthetic Aperture Radar</option>
+              <option value="Hydrophone">Benthic Hydrophone Arrays</option>
+              <option value="Sonar">Sonar Bathymetry Sensors</option>
             </select>
           </div>
 
-          {/* Download Raw GIS Layer Dataset Button */}
-          <button
-            onClick={() => exportDatasetAsFile('Global_GIS_Overlays', 'CSV')}
-            className="w-full py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold text-xs hover:bg-slate-300 dark:hover:bg-slate-700 transition-all flex items-center justify-center gap-1.5"
-          >
-            <Download className="w-3.5 h-3.5 text-sky-500" />
-            <span>Download GIS CSV Layer Data</span>
-          </button>
-
-        </div>
-
-        {/* Sectors Quick Selector List */}
-        <div className="pt-3 border-t border-slate-200 dark:border-slate-800 hidden md:block">
-          <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
-            Click Sector to Inspect ({filteredSectors.length} Sectors):
-          </p>
-          <div className="space-y-1 max-h-36 overflow-y-auto pr-1">
-            {filteredSectors.map((sec) => (
-              <button
-                key={sec.id}
-                onClick={() => setSelectedSector(sec)}
-                className={`w-full px-2.5 py-1.5 rounded-lg text-left text-xs flex items-center justify-between ${
-                  selectedSector?.id === sec.id
-                    ? 'bg-sky-500/20 text-sky-700 dark:text-sky-300 font-bold border border-sky-500/40'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-900'
-                }`}
-              >
-                <div className="truncate pr-1">
-                  <span className="font-bold text-slate-900 dark:text-white block truncate">{sec.name}</span>
-                  <span className="text-[9px] text-slate-400 font-mono">{sec.oceanBasin}</span>
-                </div>
-                <span className={`text-[9px] font-mono px-1 rounded font-bold shrink-0 ${
-                  sec.pollutionRisk === 'Critical' ? 'bg-rose-500/20 text-rose-600 dark:text-rose-400' : 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400'
-                }`}>
-                  {sec.healthScore}/100
-                </span>
-              </button>
-            ))}
+          {/* Ocean Sector Selector List */}
+          <div className="space-y-1.5 pt-2 border-t border-slate-800 max-h-48 overflow-y-auto no-scrollbar">
+            <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">
+              Monitored Ocean Sectors ({filteredSectors.length})
+            </label>
+            <div className="space-y-1">
+              {filteredSectors.map((sector) => (
+                <button
+                  key={sector.id}
+                  onClick={() => handleSectorClick(sector)}
+                  className={`w-full text-left px-3 py-2 rounded-xl text-xs transition-all flex items-center justify-between border ${
+                    selectedSector.id === sector.id
+                      ? 'bg-slate-800 text-white border-slate-600 font-bold'
+                      : 'bg-slate-950/60 text-slate-300 border-slate-800/80 hover:bg-slate-800/50'
+                  }`}
+                >
+                  <span className="truncate">{sector.id}: {sector.name}</span>
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono ${
+                    sector.pollutionRisk === 'Critical' ? 'bg-rose-500/20 text-rose-400' : 'bg-emerald-500/20 text-emerald-400'
+                  }`}>
+                    {sector.healthScore}/100
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
+
         </div>
+
+        {/* Global Dataset Export Action Button */}
+        <button
+          onClick={() => exportDatasetAsFile('Ocean_GIS_Sectors', 'CSV')}
+          className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 transition-all flex items-center justify-center gap-2 shadow-md mt-2"
+        >
+          <Download className="w-4 h-4 text-slate-300" />
+          <span>Export GIS CSV Dataset</span>
+        </button>
 
       </div>
 
-      {/* Main Map Viewport */}
-      <div className="flex-1 relative bg-slate-950">
+      {/* MAP CANVAS AREA WITH POPUP SECTOR DETAIL CARD */}
+      <div className="flex-1 relative w-full h-full min-h-[400px] bg-slate-950 overflow-hidden">
         
-        {mounted && L ? (
-          <MapContainer
-            center={[10.0, 0.0]}
-            zoom={3}
-            minZoom={2}
-            maxZoom={12}
-            scrollWheelZoom={true}
-            worldCopyJump={false}
-            maxBounds={[[-85, -180], [85, 180]]}
-            className="w-full h-full z-10"
-          >
-            {/* Dynamic Map Basemap Layer */}
-            <TileLayer
-              attribution='&copy; <a href="https://www.esri.com/">ESRI Satellite / CARTO English</a>'
-              url={
-                mapStyle === 'satellite'
-                  ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-                  : mapStyle === 'dark'
-                  ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-                  : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'
-              }
-            />
+        {/* Dynamic Leaflet Map Canvas */}
+        <div className="absolute inset-0 z-0">
+          <iframe
+            title="Ocean GIS Map View"
+            srcDoc={`
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+                <style>
+                  body { margin: 0; padding: 0; background: #0f172a; }
+                  #map { width: 100vw; height: 100vh; }
+                  .leaflet-container { background: #0f172a; }
+                  .custom-pulse {
+                    width: 20px;
+                    height: 20px;
+                    background: rgba(225, 29, 72, 0.7);
+                    border: 2px solid #ffffff;
+                    border-radius: 50%;
+                    box-shadow: 0 0 15px rgba(225, 29, 72, 0.8);
+                    animation: pulse 1.5s infinite;
+                  }
+                  @keyframes pulse {
+                    0% { transform: scale(0.9); opacity: 0.9; }
+                    50% { transform: scale(1.4); opacity: 0.4; }
+                    100% { transform: scale(0.9); opacity: 0.9; }
+                  }
+                </style>
+              </head>
+              <body>
+                <div id="map"></div>
+                <script>
+                  var map = L.map('map', { zoomControl: false }).setView([${selectedSector.lat}, ${selectedSector.lng}], 4);
+                  L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-            {/* Ocean Sector Markers Distributed Globally */}
-            {filteredSectors.map((sec) => (
-              <CircleMarker
-                key={sec.id}
-                center={[sec.lat, sec.lng]}
-                radius={sec.pollutionRisk === 'Critical' ? 20 : 15}
-                pathOptions={{
-                  color: sec.pollutionRisk === 'Critical' ? '#F43F5E' : sec.pollutionRisk === 'High' ? '#F59E0B' : '#10B981',
-                  fillColor: sec.pollutionRisk === 'Critical' ? '#F43F5E' : sec.pollutionRisk === 'High' ? '#F59E0B' : '#10B981',
-                  fillOpacity: 0.5,
-                  weight: 2,
-                }}
-                eventHandlers={{
-                  click: () => setSelectedSector(sec),
-                }}
-              >
-                <Popup>
-                  <div className="p-1">
-                    <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-700 dark:text-sky-300 block w-max mb-1">
-                      {sec.scanType}
-                    </span>
-                    <h4 className="font-bold text-xs text-slate-900 dark:text-white">{sec.name}</h4>
-                    <p className="text-[10px] text-slate-500 font-mono">{sec.oceanBasin}</p>
-                    <p className="text-[11px] text-sky-600 dark:text-sky-400 font-mono mt-0.5 font-bold">
-                      Health Score: {sec.healthScore}/100
-                    </p>
-                    <button
-                      onClick={() => setSelectedSector(sec)}
-                      className="mt-2 text-[10px] font-bold text-sky-600 dark:text-sky-400 underline block"
-                    >
-                      Inspect Telemetry Panel
-                    </button>
-                  </div>
-                </Popup>
-              </CircleMarker>
-            ))}
+                  L.tileLayer('${tileUrls[tileProvider]}', {
+                    maxZoom: 18,
+                    attribution: 'ESRI Satellite & Bathymetry'
+                  }).addTo(map);
 
-            {/* Underwater AUV Drones Layer */}
-            {layers.drones && droneFleet.map((drone) => (
-              <CircleMarker
-                key={drone.id}
-                center={[drone.lat, drone.lng]}
-                radius={9}
-                pathOptions={{
-                  color: '#38BDF8',
-                  fillColor: '#38BDF8',
-                  fillOpacity: 0.8,
-                  weight: 2,
-                }}
-              >
-                <Popup>
-                  <div className="p-1 text-xs">
-                    <p className="font-bold text-sky-600 dark:text-sky-400">{drone.name} ({drone.type})</p>
-                    <p className="text-[10px]">Scan Type: {drone.scanType}</p>
-                    <p className="text-[10px]">Status: {drone.status} • Depth: {drone.depthMeters}m</p>
-                  </div>
-                </Popup>
-              </CircleMarker>
-            ))}
+                  // Add ocean sector pins
+                  var sectorData = ${JSON.stringify(oceanSectors)};
+                  sectorData.forEach(function(sec) {
+                    var marker = L.circleMarker([sec.lat, sec.lng], {
+                      radius: sec.id === '${selectedSector.id}' ? 12 : 8,
+                      fillColor: sec.pollutionRisk === 'Critical' ? '#f43f5e' : (sec.pollutionRisk === 'High' ? '#fb923c' : '#10b981'),
+                      color: '#ffffff',
+                      weight: 2,
+                      opacity: 1,
+                      fillOpacity: 0.85
+                    }).addTo(map);
 
-            {/* Pollution Hotspots Layer */}
-            {layers.pollution && aiDetections.map((det) => (
-              <CircleMarker
-                key={det.id}
-                center={det.coordinates}
-                radius={11}
-                pathOptions={{
-                  color: '#F43F5E',
-                  fillColor: '#F43F5E',
-                  fillOpacity: 0.7,
-                  weight: 1.5,
-                }}
-              >
-                <Popup>
-                  <div className="p-1 text-xs">
-                    <span className="text-[9px] font-mono font-bold text-rose-600 dark:text-rose-400 block">{det.scanType}</span>
-                    <p className="font-bold text-slate-900 dark:text-white">{det.title}</p>
-                    <p className="text-[10px] text-slate-500">{det.oceanBasin} • Depth: {det.depth}m</p>
-                  </div>
-                </Popup>
-              </CircleMarker>
-            ))}
-          </MapContainer>
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-sky-500 font-mono text-xs">
-            <Radio className="w-6 h-6 animate-spin mr-2" />
-            <span>Initializing Google Maps Satellite GIS Engine...</span>
-          </div>
-        )}
+                    marker.bindTooltip(sec.name + " (" + sec.healthScore + "/100)", { permanent: false, direction: 'top' });
+                  });
+                </script>
+              </body>
+              </html>
+            `}
+            className="w-full h-full border-none"
+          />
+        </div>
 
-        {/* Selected Sector Panel Overlay */}
+        {/* MAP OVERLAY: COMPACT SECTOR DETAIL CARD (NO EMPTY GAP) */}
         {selectedSector && (
-          <div className="absolute bottom-4 right-4 sm:top-4 z-30 w-[90vw] sm:w-96 rounded-3xl glass-panel border border-sky-500/50 p-5 shadow-2xl animate-in fade-in slide-in-from-right-4">
+          <div className="absolute top-4 right-4 z-30 max-w-sm w-full bg-slate-900/95 backdrop-blur-2xl border border-slate-700/80 rounded-3xl p-5 shadow-2xl text-white space-y-4 animate-in fade-in slide-in-from-right-4">
             
-            <div className="flex items-start justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+            {/* Header */}
+            <div className="flex items-start justify-between pb-3 border-b border-slate-800">
               <div>
-                <span className="text-[10px] font-mono font-extrabold text-sky-600 dark:text-sky-400 px-2 py-0.5 rounded bg-sky-500/20 border border-sky-500/30">
+                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
                   {selectedSector.id} • {selectedSector.oceanBasin}
                 </span>
-                <h3 className="font-bold text-sm text-slate-900 dark:text-white mt-1">
-                  {selectedSector.name}
-                </h3>
+                <h4 className="text-base font-extrabold text-white mt-1">{selectedSector.name}</h4>
               </div>
-              <button
-                onClick={() => setSelectedSector(null)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                selectedSector.pollutionRisk === 'Critical' ? 'bg-rose-500/20 text-rose-400' : 'bg-emerald-500/20 text-emerald-400'
+              }`}>
+                {selectedSector.pollutionRisk} Risk
+              </span>
             </div>
 
-            <div className="py-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-500 dark:text-slate-400">Scan Sensor Type:</span>
-                <span className="text-xs font-mono font-bold text-sky-600 dark:text-sky-300">{selectedSector.scanType}</span>
+            {/* Comprehensive Telemetry Metrics (No Empty Space) */}
+            <div className="grid grid-cols-2 gap-2.5 text-xs font-mono">
+              <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+                <span className="text-slate-400 text-[10px] block">Ocean Health Score</span>
+                <strong className="text-white text-sm">{selectedSector.healthScore} / 100</strong>
               </div>
 
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-500 dark:text-slate-400">Ocean Health Score:</span>
-                <span className="text-sm font-extrabold text-slate-900 dark:text-white font-mono">{selectedSector.healthScore} / 100</span>
+              <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+                <span className="text-slate-400 text-[10px] block">Patrol Depth</span>
+                <strong className="text-slate-300 text-sm">{selectedSector.depthMeters} meters</strong>
               </div>
 
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-500 dark:text-slate-400">Pollution Risk Level:</span>
-                <span className={`text-xs font-extrabold px-2 py-0.5 rounded ${
-                  selectedSector.pollutionRisk === 'Critical' ? 'bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/40' :
-                  selectedSector.pollutionRisk === 'High' ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/40' : 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/40'
-                }`}>
-                  {selectedSector.pollutionRisk}
-                </span>
+              <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+                <span className="text-slate-400 text-[10px] block">Water Quality Status</span>
+                <strong className="text-slate-300 text-xs truncate block">{selectedSector.waterQuality}</strong>
               </div>
 
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-500 dark:text-slate-400">Patrol Depth:</span>
-                <span className="text-xs font-mono font-bold text-slate-900 dark:text-white">{selectedSector.depthMeters} meters</span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-500 dark:text-slate-400">AI Confidence:</span>
-                <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">{selectedSector.aiConfidence}%</span>
+              <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
+                <span className="text-slate-400 text-[10px] block">Primary Environmental Threat</span>
+                <strong className="text-rose-400 text-xs truncate block">{selectedSector.primaryThreat}</strong>
               </div>
             </div>
 
-            {/* Action Buttons with Download Option */}
-            <div className="pt-3 border-t border-slate-200 dark:border-slate-800 grid grid-cols-2 gap-2 text-[11px]">
+            {/* Sensor Specs */}
+            <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-[11px] space-y-1">
+              <div className="flex justify-between text-slate-400">
+                <span>Sensor Type:</span>
+                <strong className="text-white">{selectedSector.scanType}</strong>
+              </div>
+              <div className="flex justify-between text-slate-400">
+                <span>Coordinates:</span>
+                <strong className="text-emerald-400 font-mono">{selectedSector.lat}° N, {selectedSector.lng}° W</strong>
+              </div>
+            </div>
+
+            {/* Action Buttons (Compact Fit) */}
+            <div className="grid grid-cols-2 gap-2 pt-1">
               <button
-                onClick={() => handleSectorDataDownload(selectedSector.name)}
-                className="p-2 rounded-xl bg-sky-600 text-white hover:bg-sky-700 font-bold flex items-center justify-center gap-1 shadow-sm"
+                onClick={() => exportDatasetAsFile(selectedSector.name, 'CSV')}
+                className="py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 transition-all flex items-center justify-center gap-1.5"
               >
-                <Download className="w-3.5 h-3.5" />
-                <span>Download Sector CSV</span>
+                <Download className="w-3.5 h-3.5 text-slate-300" />
+                <span>Sector CSV</span>
               </button>
 
-              <a
+              <Link
                 href="/predictive-map"
-                className="p-2 rounded-xl bg-slate-800 text-white hover:bg-slate-700 text-center font-bold flex items-center justify-center gap-1 shadow-sm"
+                className="py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 transition-all flex items-center justify-center gap-1.5"
               >
-                <TrendingUp className="w-3.5 h-3.5 text-sky-400" />
-                <span>30-Day Risk</span>
-              </a>
+                <span>30-Day Risk →</span>
+              </Link>
             </div>
 
           </div>

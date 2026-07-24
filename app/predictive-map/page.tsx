@@ -1,242 +1,311 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { 
   TrendingUp, 
-  Clock, 
-  ShieldAlert, 
+  MapPin, 
+  AlertTriangle, 
+  ShieldCheck, 
+  ArrowRight, 
+  Calendar, 
   Wind, 
-  Layers, 
-  Sparkles, 
+  Droplets, 
+  Activity, 
+  Download, 
+  Play, 
   CheckCircle2, 
-  ArrowRight,
-  Compass,
-  AlertTriangle
+  HelpCircle,
+  Radio,
+  Layers
 } from 'lucide-react';
-import { predictiveRiskData } from '@/lib/mock-data';
+import { oceanSectors, exportDatasetAsFile } from '@/lib/mock-data';
 
-export default function PredictiveRiskMapPage() {
-  const [timeframe, setTimeframe] = useState<'NOW' | '7_DAYS' | '30_DAYS'>('NOW');
+export default function PredictiveMapPage() {
+  const [selectedTimeline, setSelectedTimeline] = useState<'now' | '7days' | '30days'>('now');
   const [selectedSectorId, setSelectedSectorId] = useState<string>('SEC-04');
+  const [actionSuccess, setActionSuccess] = useState<string | null>(null);
 
-  const selectedData = predictiveRiskData.find(d => d.sectorId === selectedSectorId) || predictiveRiskData[0];
+  const activeSector = oceanSectors.find(s => s.id === selectedSectorId) || oceanSectors[3];
 
-  const getRiskDetails = () => {
-    if (timeframe === 'NOW') {
-      return {
-        label: 'Current Status (NOW)',
-        riskLevel: selectedData.currentRisk,
-        score: selectedData.currentRiskScore,
-        spread: selectedData.currentSpreadKm2,
-        color: selectedData.currentRisk === 'Critical' ? 'text-coral-600 dark:text-coral-400 bg-coral-500/20 border-coral-500/40' : 'text-amber-600 dark:text-amber-400 bg-amber-500/20 border-amber-500/40',
-        heatmapOpacity: 0.3,
-        scale: 1,
-      };
-    } else if (timeframe === '7_DAYS') {
-      return {
-        label: '7-Day Forecast Horizon',
-        riskLevel: selectedData.sevenDayRisk,
-        score: selectedData.sevenDayRiskScore,
-        spread: selectedData.sevenDaySpreadKm2,
-        color: 'text-amber-600 dark:text-amber-400 bg-amber-500/20 border-amber-500/40',
-        heatmapOpacity: 0.65,
-        scale: 1.6,
-      };
-    } else {
-      return {
-        label: '30-Day Critical Forecast Horizon',
-        riskLevel: selectedData.thirtyDayRisk,
-        score: selectedData.thirtyDayRiskScore,
-        spread: selectedData.thirtyDaySpreadKm2,
-        color: 'text-coral-600 dark:text-coral-400 bg-coral-500/20 border-coral-500/40',
-        heatmapOpacity: 0.9,
-        scale: 2.5,
-      };
+  // Hydrodynamic plume predictions based on selected timeline
+  const plumeMetrics = {
+    now: {
+      timelineLabel: 'NOW (Baseline Data)',
+      spreadKm2: 14.5,
+      riskScore: 88,
+      riskLevel: 'Critical',
+      radiusMeters: 25000,
+      color: '#f43f5e',
+      factors: [
+        'Seasonal Atlantic Gyre Current Vectors (0.82 m/s SW)',
+        'Uncontrolled Illegal Cargo Vessel Fuel Discharge',
+        'Low Dissolved Oxygen Trends (3.1 mg/L)'
+      ],
+      recommendation: 'Deploy autonomous containment boom & dispatch AUV fleet for robotic trash retrieval before plume intersects Marine Sanctuary.'
+    },
+    '7days': {
+      timelineLabel: '7-DAY FORECAST (+168 hrs)',
+      spreadKm2: 48.2,
+      riskScore: 92,
+      riskLevel: 'Critical',
+      radiusMeters: 60000,
+      color: '#e11d48',
+      factors: [
+        'Accelerated Surface Current Drift (+1.2 m/s)',
+        'Plume Intersection with Seamount Coral Nursery',
+        'Thermal Upwelling Anomaly Spreading East'
+      ],
+      recommendation: 'Issue Coast Guard Notice to Mariners & deploy secondary benthic ROV barrier.'
+    },
+    '30days': {
+      timelineLabel: '30-DAY FORECAST (+720 hrs)',
+      spreadKm2: 185.0,
+      riskScore: 96,
+      riskLevel: 'Severe Emergency',
+      radiusMeters: 140000,
+      color: '#9f1239',
+      factors: [
+        'Pelagic Gyre Trapping 185 km² Microplastic Mass',
+        'Irreversible Coral Bleaching Exposure Risk',
+        'Trans-Oceanic Migration Corridor Impact'
+      ],
+      recommendation: 'Execute Intergovernmental Disaster Response & initiate AUV Autonomous Clean-up.'
     }
+  }[selectedTimeline];
+
+  const handleExecuteAction = () => {
+    setActionSuccess(`Initiated Autonomous AUV Containment Intervention for ${activeSector.name} ✓`);
+    setTimeout(() => setActionSuccess(null), 4000);
   };
 
-  const currentRiskState = getRiskDetails();
-
   return (
-    <div className="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
+    <div className="space-y-8 py-6 sm:py-8 text-slate-900 dark:text-slate-100">
       
-      {/* USP Banner Header */}
-      <div className="p-8 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 text-center relative overflow-hidden">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-600 dark:text-cyan-400 text-xs font-semibold mb-4">
-          <Sparkles className="w-4 h-4 text-cyan-500 animate-pulse" />
-          <span>KEY DIFFERENTIATING FEATURE — MAIN USP</span>
+      {/* HEADER BAR */}
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
+        <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-mono font-bold mb-2">
+            <Radio className="w-3.5 h-3.5 text-slate-400 animate-pulse" />
+            <span>HYDRODYNAMIC PLUME FORECAST MODEL</span>
+          </div>
+          <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
+            30-Day Subsea Pollution Plume Prediction
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
+            Simulating microplastic & oil slick dispersion using NOAA current vectors and satellite SAR altimetry.
+          </p>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight max-w-4xl mx-auto">
-          DeepSea Guardian does not just detect today’s threats.{' '}
-          <span className="bg-gradient-to-r from-violet-600 via-cyan-500 to-amber-500 bg-clip-text text-transparent">
-            It predicts tomorrow’s environmental risks.
-          </span>
-        </h1>
-
-        <p className="text-slate-600 dark:text-slate-400 text-sm max-w-2xl mx-auto mt-4">
-          Interactive hydrodynamic modeling simulating 30-day ocean currents, thermal gradients, and microplastic plume dispersion.
-        </p>
+        <button
+          onClick={() => exportDatasetAsFile(`Predictive_Model_${selectedSectorId}`, 'CSV')}
+          className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 shadow-md transition-all flex items-center gap-2 shrink-0"
+        >
+          <Download className="w-4 h-4 text-slate-300" />
+          <span>Export Forecast CSV</span>
+        </button>
       </div>
 
-      {/* Interactive Timeline Controls (NOW → 7 DAYS → 30 DAYS) */}
-      <div className="p-6 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6">
-        
-        <div className="flex items-center gap-3">
-          <Clock className="w-6 h-6 text-cyan-500 dark:text-cyan-400" />
-          <div>
-            <h3 className="font-bold text-sm text-slate-900 dark:text-white">Interactive Forecast Timeline</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Drag timeline slider to project plume expansion</p>
-          </div>
+      {actionSuccess && (
+        <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center justify-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+          <span>{actionSuccess}</span>
+        </div>
+      )}
+
+      {/* TIMELINE CONTROL BAR - MATTE SLATE CHARCOAL */}
+      <div className="p-4 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h3 className="font-extrabold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-slate-400" />
+            <span>Interactive Forecast Timeline:</span>
+          </h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Select timeline horizon to simulate hydrodynamic plume dispersion.
+          </p>
         </div>
 
-        {/* Timeline Slider Buttons */}
-        <div className="flex rounded-2xl bg-slate-100 dark:bg-slate-900 p-1.5 border border-slate-200 dark:border-slate-800 max-w-md w-full text-xs font-bold">
+        <div className="flex rounded-2xl bg-slate-200 dark:bg-slate-950 p-1 font-bold text-xs border border-slate-300 dark:border-slate-800 shrink-0 w-full sm:w-auto">
           <button
-            onClick={() => setTimeframe('NOW')}
-            className={`flex-1 py-3 rounded-xl transition-all ${
-              timeframe === 'NOW'
-                ? 'bg-cyan-500 text-slate-950 shadow-glow-cyan'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+            onClick={() => setSelectedTimeline('now')}
+            className={`flex-1 sm:flex-none px-5 py-2 rounded-xl transition-all ${
+              selectedTimeline === 'now'
+                ? 'bg-slate-800 text-white border border-slate-700 shadow-md'
+                : 'text-slate-600 dark:text-slate-400 hover:text-white'
             }`}
           >
             NOW (Baseline)
           </button>
-
           <button
-            onClick={() => setTimeframe('7_DAYS')}
-            className={`flex-1 py-3 rounded-xl transition-all ${
-              timeframe === '7_DAYS'
-                ? 'bg-amber-500 text-slate-950 shadow-glow-amber'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+            onClick={() => setSelectedTimeline('7days')}
+            className={`flex-1 sm:flex-none px-5 py-2 rounded-xl transition-all ${
+              selectedTimeline === '7days'
+                ? 'bg-slate-800 text-white border border-slate-700 shadow-md'
+                : 'text-slate-600 dark:text-slate-400 hover:text-white'
             }`}
           >
             7 DAYS
           </button>
-
           <button
-            onClick={() => setTimeframe('30_DAYS')}
-            className={`flex-1 py-3 rounded-xl transition-all ${
-              timeframe === '30_DAYS'
-                ? 'bg-coral-500 text-slate-950 shadow-glow-coral'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+            onClick={() => setSelectedTimeline('30days')}
+            className={`flex-1 sm:flex-none px-5 py-2 rounded-xl transition-all ${
+              selectedTimeline === '30days'
+                ? 'bg-slate-800 text-white border border-slate-700 shadow-md'
+                : 'text-slate-600 dark:text-slate-400 hover:text-white'
             }`}
           >
             30 DAYS
           </button>
         </div>
-
       </div>
 
-      {/* Main Interactive Simulation Viewport & Contributing Factors */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* MAIN REAL GIS MAP DISPERSION CANVAS & RISK ANALYSIS */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* Simulation Map Viewport Canvas */}
-        <div className="lg:col-span-2 p-6 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 relative overflow-hidden flex flex-col justify-between min-h-[480px]">
-          
-          <div className="flex items-center justify-between mb-4 z-10">
-            <div className="flex items-center gap-2">
-              <span className={`w-3 h-3 rounded-full ${timeframe === '30_DAYS' ? 'bg-coral-500 animate-ping' : 'bg-cyan-400'}`} />
-              <h3 className="font-bold text-sm text-slate-900 dark:text-white">{selectedData.sectorName}</h3>
-            </div>
-            <span className={`text-xs font-mono font-extrabold px-3 py-1 rounded-full border ${currentRiskState.color}`}>
-              {currentRiskState.label} — Risk Level: {currentRiskState.riskLevel}
-            </span>
-          </div>
-
-          {/* Dynamic Visual Hydrodynamic Dispersion Map Simulation */}
-          <div className="relative flex-1 w-full rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 flex items-center justify-center p-8">
+        {/* REAL GIS MAP CANVAS WITH DYNAMIC PLUME EXPANSION RING */}
+        <div className="lg:col-span-2 space-y-4">
+          <div className="rounded-3xl glass-panel border border-slate-300 dark:border-slate-800 overflow-hidden shadow-2xl bg-slate-950">
             
-            {/* Background Bathymetry Grid */}
-            <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#00f0ff_1px,transparent_1px)] [background-size:16px_16px]" />
-
-            {/* Dynamic Expanding Plume Layer */}
-            <div
-              className="absolute rounded-full bg-gradient-to-r from-coral-500 via-rose-600 to-amber-500 blur-2xl transition-all duration-1000 ease-out"
-              style={{
-                width: `${120 * currentRiskState.scale}px`,
-                height: `${120 * currentRiskState.scale}px`,
-                opacity: currentRiskState.heatmapOpacity,
-              }}
-            />
-
-            {/* Center Sector Marker */}
-            <div className="relative z-10 p-4 rounded-2xl glass-panel border border-cyan-400 text-center shadow-2xl bg-slate-950/80">
-              <span className="text-xs font-mono font-bold text-cyan-400 block mb-1">
-                PLUME CONTAMINATION AREA
+            {/* Map Top Bar */}
+            <div className="p-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-xs text-white">
+              <span className="font-extrabold flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-rose-400 animate-pulse" />
+                <span>{activeSector.name} ({activeSector.oceanBasin})</span>
               </span>
-              <span className="text-3xl font-extrabold text-white font-mono">
-                {currentRiskState.spread} <span className="text-sm font-normal text-slate-300">km²</span>
+              <span className="px-3 py-1 rounded-full bg-rose-500/20 text-rose-400 font-mono font-bold text-[10px]">
+                {plumeMetrics.timelineLabel} • RISK: {plumeMetrics.riskLevel.toUpperCase()}
               </span>
-              <p className="text-[10px] text-coral-400 font-mono mt-1 font-bold">
-                Risk Score: {currentRiskState.score} / 100
-              </p>
+            </div>
+
+            {/* REAL LEAFLET MAP WITH DYNAMIC HEAT RING */}
+            <div className="relative h-[420px] sm:h-[480px] w-full bg-slate-950">
+              <iframe
+                title="Real GIS Map Plume Dispersion Simulation"
+                srcDoc={`
+                  <!DOCTYPE html>
+                  <html>
+                  <head>
+                    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+                    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+                    <style>
+                      body { margin: 0; padding: 0; background: #0f172a; }
+                      #map { width: 100vw; height: 100vh; }
+                      .leaflet-container { background: #0f172a; }
+                    </style>
+                  </head>
+                  <body>
+                    <div id="map"></div>
+                    <script>
+                      var map = L.map('map', { zoomControl: false }).setView([${activeSector.lat}, ${activeSector.lng}], 6);
+                      L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+                      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                        maxZoom: 18,
+                        attribution: 'ESRI Satellite'
+                      }).addTo(map);
+
+                      // Plume Dispersion Heat Ring
+                      var plumeCircle = L.circle([${activeSector.lat}, ${activeSector.lng}], {
+                        color: '${plumeMetrics.color}',
+                        fillColor: '${plumeMetrics.color}',
+                        fillOpacity: 0.45,
+                        radius: ${plumeMetrics.radiusMeters},
+                        weight: 3
+                      }).addTo(map);
+
+                      // Sector Pin Marker
+                      var marker = L.circleMarker([${activeSector.lat}, ${activeSector.lng}], {
+                        radius: 12,
+                        fillColor: '#ffffff',
+                        color: '${plumeMetrics.color}',
+                        weight: 4,
+                        opacity: 1,
+                        fillOpacity: 1
+                      }).addTo(map);
+
+                      marker.bindTooltip("<b>${activeSector.name}</b><br/>Plume Area: ${plumeMetrics.spreadKm2} km²<br/>Risk Score: ${plumeMetrics.riskScore}/100", { permanent: true, direction: 'top' });
+                    </script>
+                  </body>
+                  </html>
+                `}
+                className="w-full h-full border-none"
+              />
+
+              {/* FLOATING OVERLAY: PLUME CONTAMINATION METRICS CARD */}
+              <div className="absolute top-4 left-4 z-20 p-4 rounded-2xl bg-slate-900/95 backdrop-blur-2xl border border-slate-700 shadow-2xl text-white space-y-1 font-mono">
+                <span className="text-[10px] text-slate-400 block uppercase font-bold">PLUME CONTAMINATION AREA</span>
+                <span className="text-3xl font-extrabold text-white block">{plumeMetrics.spreadKm2} <span className="text-sm text-slate-400 font-sans">km²</span></span>
+                <span className="text-xs text-rose-400 font-bold block">Risk Score: {plumeMetrics.riskScore} / 100</span>
+              </div>
+            </div>
+
+            {/* Bottom Sector Switcher Bar */}
+            <div className="p-4 bg-slate-900 border-t border-slate-800 flex items-center justify-between text-xs">
+              <span className="font-mono text-slate-400 text-[11px]">Select Monitored Sector:</span>
+              <div className="flex gap-2">
+                {oceanSectors.slice(1, 4).map((sec) => (
+                  <button
+                    key={sec.id}
+                    onClick={() => setSelectedSectorId(sec.id)}
+                    className={`px-3 py-1.5 rounded-xl font-mono text-xs font-bold transition-all ${
+                      selectedSectorId === sec.id
+                        ? 'bg-slate-800 text-white border border-slate-700 shadow-sm'
+                        : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+                    }`}
+                  >
+                    {sec.id}
+                  </button>
+                ))}
+              </div>
             </div>
 
           </div>
-
-          {/* Sector Selector Tabs */}
-          <div className="mt-4 flex items-center gap-2 overflow-x-auto text-xs z-10 pt-2">
-            <span className="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase shrink-0">Select Sector:</span>
-            {predictiveRiskData.map((d) => (
-              <button
-                key={d.sectorId}
-                onClick={() => setSelectedSectorId(d.sectorId)}
-                className={`px-3 py-1.5 rounded-xl whitespace-nowrap font-mono text-[11px] transition-all ${
-                  selectedSectorId === d.sectorId
-                    ? 'bg-cyan-500 text-slate-950 font-bold shadow-glow-cyan'
-                    : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                {d.sectorId}
-              </button>
-            ))}
-          </div>
-
         </div>
 
-        {/* Contributing Factors & Recommended Interventions */}
-        <div className="p-6 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 flex flex-col justify-between space-y-6">
+        {/* RIGHT SIDE: CONTRIBUTING FACTORS & RECOMMENDED ACTION */}
+        <div className="space-y-4">
           
-          <div>
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-              <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
-                <Wind className="w-4 h-4 text-cyan-500 dark:text-cyan-400" />
+          {/* Contributing Factors Card */}
+          <div className="p-5 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                <Wind className="w-5 h-5 text-slate-400" />
                 <span>Contributing Factors</span>
               </h3>
-              <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold">
-                {selectedData.aiConfidence}% AI Confidence
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                96% Confidence
               </span>
             </div>
 
-            <ul className="space-y-3 mt-4 text-xs">
-              {selectedData.primaryDrivers.map((driver, idx) => (
-                <li key={idx} className="flex items-start gap-2 p-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                  <CheckCircle2 className="w-4 h-4 text-cyan-500 dark:text-cyan-400 shrink-0 mt-0.5" />
-                  <span className="text-slate-800 dark:text-slate-300 font-medium">{driver}</span>
-                </li>
+            <div className="space-y-2.5 text-xs">
+              {plumeMetrics.factors.map((factor, idx) => (
+                <div key={idx} className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-start gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                  <span className="text-slate-700 dark:text-slate-300 leading-relaxed font-medium">{factor}</span>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
 
-          {/* Recommended Conservation Action */}
-          <div className="p-4 rounded-2xl bg-coral-500/10 border border-coral-500/30">
-            <h4 className="text-xs font-bold text-coral-600 dark:text-coral-400 flex items-center gap-1.5 mb-2">
-              <AlertTriangle className="w-4 h-4" />
-              <span>Recommended Action</span>
-            </h4>
-            <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-              {selectedData.recommendedMitigation}
+          {/* Recommended Action Card */}
+          <div className="p-5 rounded-3xl bg-rose-500/10 border border-rose-500/30 space-y-4">
+            <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400">
+              <AlertTriangle className="w-5 h-5 shrink-0 animate-pulse" />
+              <h4 className="font-extrabold text-sm">Recommended Intervention</h4>
+            </div>
+
+            <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
+              {plumeMetrics.recommendation}
             </p>
-          </div>
 
-          <button
-            onClick={() => alert(`Executing preventative AUV mission to ${selectedData.sectorName}...`)}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-500 text-slate-950 font-bold text-xs shadow-glow-cyan hover:opacity-90 transition-all flex items-center justify-center gap-2"
-          >
-            <span>Execute Recommended Intervention</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
+            <button
+              onClick={handleExecuteAction}
+              className="w-full py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 shadow-md transition-all flex items-center justify-center gap-2"
+            >
+              <span>Execute Intervention Protocol</span>
+              <ArrowRight className="w-4 h-4 text-slate-300" />
+            </button>
+          </div>
 
         </div>
 

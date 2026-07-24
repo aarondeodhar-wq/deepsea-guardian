@@ -26,7 +26,12 @@ import {
   Globe, 
   ShieldCheck, 
   Lock,
-  Building2
+  Building2,
+  Anchor,
+  Navigation,
+  Server,
+  Phone,
+  Copy
 } from 'lucide-react';
 import { oceanSectors, aiDetections, smartAlerts, droneFleet, systemOverview, exportDatasetAsFile } from '@/lib/mock-data';
 import { DroneDeploymentModal } from '@/components/drone-deployment-modal';
@@ -34,6 +39,7 @@ import { DroneDeploymentModal } from '@/components/drone-deployment-modal';
 export default function HomePage() {
   const [isDeployModalOpen, setIsDeployModalOpen] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState<string | null>(null);
+  const [copiedNumber, setCopiedNumber] = useState<string | null>(null);
 
   const handleDownloadCSV = () => {
     exportDatasetAsFile('Global_Ocean_Health_Telemetry', 'CSV');
@@ -41,11 +47,85 @@ export default function HomePage() {
     setTimeout(() => setDownloadSuccess(null), 4000);
   };
 
+  const handleCopyNumber = (num: string, agency: string) => {
+    navigator.clipboard.writeText(num);
+    setCopiedNumber(`Copied ${agency} hotline (${num}) to clipboard! ✓`);
+    setTimeout(() => setCopiedNumber(null), 3000);
+  };
+
   const partnerOrgs = [
-    { name: 'NOAA Ocean Sciences', role: 'Satellite SAR & Thermal Calibration', logo: '🌐' },
-    { name: 'UNESCO Oceanographic Commission', role: 'Global Marine Biodiversity Data', logo: '🏛️' },
-    { name: 'Woods Hole Institution', role: 'Subsea Autonomous AUV Engineering', logo: '⚓' },
-    { name: 'NASA Earth Observing System', role: 'Ocean Surface Altimetry Feeds', logo: '🚀' },
+    { 
+      name: 'NOAA Ocean Sciences', 
+      role: 'Satellite SAR & Thermal Calibration', 
+      category: 'Federal Agency',
+      badge: 'Live SAR Stream',
+      icon: Globe 
+    },
+    { 
+      name: 'UNESCO Oceanographic Commission', 
+      role: 'Global Marine Biodiversity Data', 
+      category: 'UN Intergovernmental',
+      badge: 'Global Taxonomy',
+      icon: Building2 
+    },
+    { 
+      name: 'Woods Hole Institution', 
+      role: 'Subsea Autonomous AUV Engineering', 
+      category: 'Research Institute',
+      badge: 'AUV Swarm Tech',
+      icon: Anchor 
+    },
+    { 
+      name: 'NASA Earth Observing System', 
+      role: 'Ocean Surface Altimetry Feeds', 
+      category: 'Space Agency',
+      badge: 'Altimetry SAR',
+      icon: Navigation 
+    },
+  ];
+
+  const hardwareSpecs = [
+    {
+      title: 'DeepGuardian AUV Swarm',
+      badge: '4,500m Depth Rated',
+      status: 'Active Unit',
+      metric: '72h Battery',
+      desc: 'Lithium-sulfur powered autonomous gliders with sub-centimeter optical cameras and deep benthic sonar.',
+      icon: Cpu
+    },
+    {
+      title: 'Benthic Hydrophone Arrays',
+      badge: '192kHz Acoustic Sampling',
+      status: 'Live Stream',
+      metric: '24/7 Monitoring',
+      desc: 'Deep-water hydrophone buoys recording cetacean acoustic spectrograms and vessel engine cavitation.',
+      icon: Radio
+    },
+    {
+      title: 'SAR Satellite Synthetic Radar',
+      badge: 'C-Band Radar Echo',
+      status: 'Calibrated',
+      metric: '10m Resolution',
+      desc: 'Polar-orbiting synthetic aperture radar piercing cloud cover to detect illegal bilge oil slicks.',
+      icon: Zap
+    },
+    {
+      title: 'PostGIS Spatial Engine',
+      badge: 'Sub-Second Indexing',
+      status: 'Database Online',
+      metric: '150+ Scan Records',
+      desc: 'High-performance spatial database linking 150+ bio-acoustic telemetry scans directly to marine sanctuaries.',
+      icon: Server
+    }
+  ];
+
+  const emergencyHotlines = [
+    { agency: 'US Coast Guard Command', number: '+1 (800) 424-8802', region: 'Americas & Atlantic', flag: '🇺🇸' },
+    { agency: 'UN Environment Program', number: '+41 22 917 8111', region: 'Global Marine Crisis', flag: '🌐' },
+    { agency: 'EMSA European Safety Agency', number: '+351 21 120 9200', region: 'Europe & Med', flag: '🇪🇺' },
+    { agency: 'AMSA Maritime Safety Authority', number: '+61 2 6279 5000', region: 'Indo-Pacific & Reefs', flag: '🇦🇺' },
+    { agency: 'Japan Coast Guard Crisis Line', number: '+81 3 3591 6361', region: 'Pacific Trench Sector', flag: '🇯🇵' },
+    { agency: 'UK Maritime & Coastguard', number: '+44 20 3817 2000', region: 'North Sea & Ridge', flag: '🇬🇧' },
   ];
 
   return (
@@ -57,7 +137,7 @@ export default function HomePage() {
         onClose={() => setIsDeployModalOpen(false)}
       />
 
-      {/* HERO SECTION - PERFECT MOBILE SCALING */}
+      {/* HERO SECTION */}
       <section className="relative pt-4 sm:pt-8 pb-8 sm:pb-12 text-center space-y-6 sm:space-y-8">
         
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-[11px] sm:text-xs font-semibold">
@@ -99,7 +179,7 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* Key Metrics Counter Bar - Compact Grid */}
+        {/* Key Metrics Counter Bar */}
         <div className="pt-6 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 max-w-5xl mx-auto text-left">
           
           <div className="p-4 sm:p-5 rounded-3xl glass-card border border-slate-200 dark:border-slate-800">
@@ -212,7 +292,7 @@ export default function HomePage() {
                 Subsea Optical Reticle Feed
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-                Subsea optical camera interceptions detecting microplastic clusters, ghost fishing nets, and chemical barrels.
+                Subsea optical camera interceptions detecting microplastics, ghost nets, and chemical barrels.
               </p>
             </div>
 
@@ -255,7 +335,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* SECTION 3: SUBSEA HARDWARE & SENSOR SPECS */}
+      {/* SECTION 3: HARDWARE ARCHITECTURE */}
       <section className="space-y-6">
         <div className="text-center space-y-2">
           <span className="text-[10px] font-mono font-bold text-slate-700 dark:text-slate-300 bg-slate-200 dark:bg-slate-800 px-3 py-1 rounded-full border border-slate-300 dark:border-slate-700 uppercase tracking-wider">
@@ -270,93 +350,185 @@ export default function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          
-          <div className="p-5 sm:p-6 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-3">
-            <Cpu className="w-7 h-7 text-slate-700 dark:text-slate-300" />
-            <h3 className="font-bold text-base text-slate-900 dark:text-white">DeepGuardian AUV</h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              4,500m depth rating, 72-hour lithium-sulfur battery endurance, sub-centimeter optical vision cameras.
-            </p>
-          </div>
+          {hardwareSpecs.map((item, idx) => {
+            const Icon = item.icon;
+            return (
+              <div 
+                key={idx} 
+                className="p-5 sm:p-6 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-4 hover:border-slate-600 transition-all flex flex-col justify-between shadow-lg"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700">
+                      <Icon className="w-6 h-6" />
+                    </div>
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                      {item.status}
+                    </span>
+                  </div>
 
-          <div className="p-5 sm:p-6 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-3">
-            <Radio className="w-7 h-7 text-emerald-500 animate-pulse" />
-            <h3 className="font-bold text-base text-slate-900 dark:text-white">Hydrophone Buoys</h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              Real-time 192kHz acoustic spectrogram sampling to track cetacean bio-acoustics and vessel cavitation.
-            </p>
-          </div>
+                  <div>
+                    <h3 className="font-extrabold text-base text-slate-900 dark:text-white">{item.title}</h3>
+                    <span className="text-[10px] font-mono font-bold text-slate-500 block mt-0.5">{item.badge}</span>
+                  </div>
 
-          <div className="p-5 sm:p-6 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-3">
-            <Zap className="w-7 h-7 text-amber-500" />
-            <h3 className="font-bold text-base text-slate-900 dark:text-white">SAR Radar Satellite</h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              C-band synthetic aperture radar piercing cloud cover to detect illegal vessel bilge oil slicks.
-            </p>
-          </div>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{item.desc}</p>
+                </div>
 
-          <div className="p-5 sm:p-6 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-3">
-            <Database className="w-7 h-7 text-slate-700 dark:text-slate-300" />
-            <h3 className="font-bold text-base text-slate-900 dark:text-white">PostGIS Spatial Database</h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              Sub-second spatial queries linking 150+ bio-acoustic telemetry scans directly to marine protection zones.
-            </p>
-          </div>
-
+                <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-[11px] font-mono">
+                  <span className="text-slate-500">Spec Metric:</span>
+                  <strong className="text-slate-900 dark:text-white font-bold">{item.metric}</strong>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 
       {/* SECTION 4: INSTITUTIONAL PARTNERS CONSORTIUM */}
       <section className="w-full">
-        <div className="p-6 sm:p-10 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-6">
+        <div className="p-6 sm:p-10 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-6 shadow-xl">
           <div className="text-center space-y-1">
             <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">
               INTERGOVERNMENTAL CONSORTIUM
             </span>
-            <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white">
+            <h2 className="text-lg sm:text-2xl font-extrabold text-slate-900 dark:text-white">
               Institutional Research & Conservation Partners
             </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Calibrated with global oceanographic centers and satellite altimetry relays.
+            </p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            {partnerOrgs.map((partner, idx) => (
-              <div key={idx} className="p-3.5 sm:p-4 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center space-y-2">
-                <span className="text-2xl sm:text-3xl block">{partner.logo}</span>
-                <h4 className="font-bold text-xs text-slate-900 dark:text-white">{partner.name}</h4>
-                <p className="text-[10px] text-slate-500 dark:text-slate-400">{partner.role}</p>
-              </div>
-            ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {partnerOrgs.map((partner, idx) => {
+              const Icon = partner.icon;
+              return (
+                <div 
+                  key={idx} 
+                  className="p-5 rounded-3xl bg-slate-100/90 dark:bg-slate-900/90 border border-slate-300 dark:border-slate-800 text-left space-y-3 hover:border-slate-600 transition-all shadow-md flex flex-col justify-between"
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="p-2.5 rounded-2xl bg-slate-800 text-white border border-slate-700">
+                        <Icon className="w-5 h-5 text-slate-200" />
+                      </div>
+                      <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700">
+                        {partner.badge}
+                      </span>
+                    </div>
+
+                    <div>
+                      <h4 className="font-extrabold text-sm text-slate-900 dark:text-white">{partner.name}</h4>
+                      <span className="text-[10px] font-mono text-slate-500 block">{partner.category}</span>
+                    </div>
+
+                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-normal">{partner.role}</p>
+                  </div>
+
+                  <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-center gap-1.5 text-[10px] text-emerald-600 dark:text-emerald-400 font-mono font-bold">
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <span>Verified Telemetry Partner</span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* SECTION 5: HELPLINE & AUDIT GENERATION DIRECTIVES */}
+      {/* SECTION 5: EXPANDED 24/7 INTERNATIONAL MARITIME EMERGENCY HELPLINES & NUMBERS */}
       <section className="w-full">
-        <div className="p-6 sm:p-8 rounded-3xl bg-slate-900 text-white space-y-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl border border-slate-800">
-          <div className="space-y-2 text-center sm:text-left">
-            <div className="flex items-center justify-center sm:justify-start gap-2">
-              <PhoneCall className="w-5 h-5 text-rose-400 animate-pulse" />
-              <h3 className="text-lg sm:text-xl font-extrabold">24/7 Coast Guard Emergency Crisis Line</h3>
+        <div className="p-6 sm:p-10 rounded-3xl bg-slate-900 text-white space-y-8 shadow-2xl border border-slate-800">
+          
+          {/* Header Bar */}
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping" />
+                <span className="text-xs font-mono font-bold text-rose-400 uppercase tracking-wider">
+                  24/7 EMERGENCY CRISIS DISPATCH HOTLINES
+                </span>
+              </div>
+              <h3 className="text-xl sm:text-3xl font-extrabold text-white">
+                Global Ocean Emergency Response Network
+              </h3>
+              <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
+                Direct dispatch numbers to report active chemical spills, illegal deep-sea mining, or ocean oil slicks to regional maritime coast guard commands.
+              </p>
             </div>
-            <p className="text-xs text-slate-300 max-w-xl">
-              Report active marine chemical barrel leaks, illegal trawling in seamount sanctuaries, or oil slicks directly to the Coast Guard Command.
-            </p>
-          </div>
 
-          <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full sm:w-auto">
             <Link
               href="/contact"
-              className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md transition-all text-center"
+              className="px-6 py-3 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-lg transition-all shrink-0"
             >
-              Contact Emergency Helplines
-            </Link>
-            <Link
-              href="/reports"
-              className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 transition-all text-center"
-            >
-              Generate Audit Report
+              Contact Full Incident Desk →
             </Link>
           </div>
+
+          {copiedNumber && (
+            <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold flex items-center justify-center gap-2 animate-in fade-in">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <span>{copiedNumber}</span>
+            </div>
+          )}
+
+          {/* 6 INTERNATIONAL HOTLINE NUMBERS GRID */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {emergencyHotlines.map((hotline, idx) => (
+              <div
+                key={idx}
+                className="p-4.5 rounded-2xl bg-slate-950 border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between space-y-3"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-lg">{hotline.flag}</span>
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-800">
+                    {hotline.region}
+                  </span>
+                </div>
+
+                <div>
+                  <h4 className="font-bold text-xs text-white">{hotline.agency}</h4>
+                  <span className="font-mono text-sm sm:text-base font-extrabold text-rose-400 block mt-1">
+                    {hotline.number}
+                  </span>
+                </div>
+
+                <div className="pt-2 border-t border-slate-900 flex items-center justify-between gap-2">
+                  <a
+                    href={`tel:${hotline.number.replace(/[^0-9+]/g, '')}`}
+                    className="flex-1 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-[11px] transition-all text-center flex items-center justify-center gap-1.5"
+                  >
+                    <Phone className="w-3.5 h-3.5" />
+                    <span>Call Hotline</span>
+                  </a>
+
+                  <button
+                    onClick={() => handleCopyNumber(hotline.number, hotline.agency)}
+                    className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all border border-slate-700"
+                    title="Copy Phone Number"
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Quick Incident Reporting Protocol */}
+          <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-slate-400">
+            <div className="flex items-center gap-2">
+              <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0" />
+              <span>Required Incident Telemetry: Lat/Lng Coordinates, Threat Type & Plume Area</span>
+            </div>
+            <Link
+              href="/reports"
+              className="text-white hover:text-slate-300 font-bold underline whitespace-nowrap"
+            >
+              Generate Official Audit Report →
+            </Link>
+          </div>
+
         </div>
       </section>
 

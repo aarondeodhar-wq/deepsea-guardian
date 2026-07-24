@@ -64,24 +64,24 @@ export default function AboutPage() {
 
         <div className="p-8 rounded-3xl glass-panel space-y-4">
           <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <Cpu className="w-6 h-6 text-violet-500" />
-            <span>The Pipeline Workflow</span>
+            <Globe className="w-6 h-6 text-emerald-500" />
+            <span>Global Telemetry & Autonomous Swarms</span>
           </h3>
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-mono font-semibold text-cyan-600 dark:text-cyan-400">
-            Monitor → Detect → Understand → Predict → Alert → Act
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+            Operating across 10 monitored ocean sectors, our autonomous AUV gliders, SAR satellite radar relays, and hydrophone buoys process real-time environmental telemetry 24 hours a day.
           </p>
-          <ul className="space-y-2 text-xs text-slate-600 dark:text-slate-300">
+          <ul className="space-y-2.5 text-xs text-slate-600 dark:text-slate-300">
             <li className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-              <span>Real-time computer vision bounding boxes for microplastics & ghost nets</span>
+              <span>4,500m depth-rated AUV drones with optical neural cameras</span>
             </li>
             <li className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-              <span>30-day hydrodynamic advection-diffusion risk forecast models</span>
+              <span>C-band Synthetic Aperture Radar (SAR) oil spill detection</span>
             </li>
             <li className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-              <span>Actionable emergency alert dispatch for Coast Guards & NGOs</span>
+              <span>192kHz bio-acoustic hydrophone sampling for cetacean protection</span>
             </li>
           </ul>
         </div>
