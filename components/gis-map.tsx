@@ -54,56 +54,56 @@ export const GISMap: React.FC<GISMapProps> = ({
     : oceanSectors.filter(s => s.scanType.toLowerCase().includes(filterType.toLowerCase()));
 
   return (
-    <div className={`relative w-full ${heightClass} rounded-3xl overflow-hidden border border-slate-300 dark:border-slate-800 shadow-2xl bg-slate-900 text-slate-100 flex flex-col md:flex-row`}>
+    <div className={`relative w-full flex flex-col md:flex-row rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-2xl bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 min-h-[85vh] md:${heightClass}`}>
       
-      {/* LEFT CONTROL PANEL - MATTE SLATE CHARCOAL GREY */}
-      <div className="w-full md:w-80 bg-slate-900 border-r border-slate-800 p-4 space-y-4 shrink-0 flex flex-col justify-between z-20">
+      {/* LEFT CONTROL PANEL - THEME ADAPTIVE */}
+      <div className="order-2 md:order-1 w-full md:w-80 bg-white/95 dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 p-4 space-y-4 shrink-0 flex flex-col justify-between z-20 overflow-y-auto max-h-[45vh] md:max-h-full">
         <div className="space-y-4">
           
           {/* Header */}
-          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
             <div className="flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-slate-300" />
-              <h3 className="font-extrabold text-sm text-white">Ocean GIS Explorer</h3>
+              <MapPin className="w-5 h-5 text-slate-700 dark:text-slate-300" />
+              <h3 className="font-extrabold text-sm text-slate-900 dark:text-white">Ocean GIS Explorer</h3>
             </div>
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700">
               Live Satellite
             </span>
           </div>
 
           {/* Map Layer Provider Options Explainer */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-mono font-bold text-slate-300 uppercase tracking-wider block">
+            <label className="text-[11px] font-mono font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider block">
               Map Style View:
             </label>
-            <p className="text-[10px] text-slate-400">Switch satellite imagery basemaps:</p>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400">Switch satellite imagery basemaps:</p>
             <div className="grid grid-cols-3 gap-1.5">
               <button
                 onClick={() => setTileProvider('esri')}
-                className={`py-2 rounded-xl text-xs font-bold transition-all border ${
+                className={`py-2 rounded-xl text-xs font-bold transition-all border ios-spring ${
                   tileProvider === 'esri'
                     ? 'bg-slate-800 text-white border-slate-600 shadow-md'
-                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
+                    : 'bg-slate-100 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-800 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 Satellite
               </button>
               <button
                 onClick={() => setTileProvider('dark')}
-                className={`py-2 rounded-xl text-xs font-bold transition-all border ${
+                className={`py-2 rounded-xl text-xs font-bold transition-all border ios-spring ${
                   tileProvider === 'dark'
                     ? 'bg-slate-800 text-white border-slate-600 shadow-md'
-                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
+                    : 'bg-slate-100 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-800 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 Dark Ocean
               </button>
               <button
                 onClick={() => setTileProvider('voyager')}
-                className={`py-2 rounded-xl text-xs font-bold transition-all border ${
+                className={`py-2 rounded-xl text-xs font-bold transition-all border ios-spring ${
                   tileProvider === 'voyager'
                     ? 'bg-slate-800 text-white border-slate-600 shadow-md'
-                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
+                    : 'bg-slate-100 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-800 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 Voyager
@@ -112,15 +112,15 @@ export const GISMap: React.FC<GISMapProps> = ({
           </div>
 
           {/* Sensor Filter Dropdown Explainer */}
-          <div className="space-y-1.5 pt-2 border-t border-slate-800">
+          <div className="space-y-1.5 pt-2 border-t border-slate-200 dark:border-slate-800">
             <div className="flex items-center justify-between">
-              <label className="text-[11px] font-mono font-bold text-slate-300 uppercase tracking-wider">
+              <label className="text-[11px] font-mono font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
                 Scan Telemetry Filter:
               </label>
               <button
                 onClick={() => setShowGrid(!showGrid)}
-                className={`text-[10px] font-bold px-2 py-0.5 rounded border transition-all ${
-                  showGrid ? 'bg-slate-800 text-white border-slate-700' : 'text-slate-400 border-slate-800'
+                className={`text-[10px] font-bold px-2 py-0.5 rounded border transition-all ios-spring ${
+                  showGrid ? 'bg-slate-800 text-white border-slate-700' : 'text-slate-500 border-slate-300 dark:border-slate-800'
                 }`}
               >
                 Grid {showGrid ? 'ON' : 'OFF'}
@@ -129,7 +129,7 @@ export const GISMap: React.FC<GISMapProps> = ({
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl bg-slate-950 text-white border border-slate-800 text-xs font-bold focus:outline-none focus:border-slate-600"
+              className="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-800 text-xs font-bold focus:outline-none focus:border-slate-400 dark:focus:border-slate-600 ios-spring"
             >
               <option value="All">All Scan Telemetry Types</option>
               <option value="AUV">AUV Optical Swarm Drones</option>
@@ -140,8 +140,8 @@ export const GISMap: React.FC<GISMapProps> = ({
           </div>
 
           {/* Ocean Sector Selector List */}
-          <div className="space-y-1.5 pt-2 border-t border-slate-800 max-h-48 overflow-y-auto no-scrollbar">
-            <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">
+          <div className="space-y-1.5 pt-2 border-t border-slate-200 dark:border-slate-800">
+            <label className="text-[10px] font-mono font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
               Monitored Ocean Sectors ({filteredSectors.length})
             </label>
             <div className="space-y-1">
@@ -149,15 +149,15 @@ export const GISMap: React.FC<GISMapProps> = ({
                 <button
                   key={sector.id}
                   onClick={() => handleSectorClick(sector)}
-                  className={`w-full text-left px-3 py-2 rounded-xl text-xs transition-all flex items-center justify-between border ${
+                  className={`w-full text-left px-3 py-2 rounded-xl text-xs transition-all flex items-center justify-between border ios-spring ${
                     selectedSector.id === sector.id
-                      ? 'bg-slate-800 text-white border-slate-600 font-bold'
-                      : 'bg-slate-950/60 text-slate-300 border-slate-800/80 hover:bg-slate-800/50'
+                      ? 'bg-slate-800 text-white border-slate-600 font-bold shadow-md'
+                      : 'bg-slate-100/50 dark:bg-slate-950/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-800/50'
                   }`}
                 >
                   <span className="truncate">{sector.id}: {sector.name}</span>
                   <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono ${
-                    sector.pollutionRisk === 'Critical' ? 'bg-rose-500/20 text-rose-400' : 'bg-emerald-500/20 text-emerald-400'
+                    sector.pollutionRisk === 'Critical' ? 'bg-rose-500/20 text-rose-600 dark:text-rose-400' : 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400'
                   }`}>
                     {sector.healthScore}/100
                   </span>
@@ -171,7 +171,7 @@ export const GISMap: React.FC<GISMapProps> = ({
         {/* Global Dataset Export Action Button */}
         <button
           onClick={() => exportDatasetAsFile('Ocean_GIS_Sectors', 'CSV')}
-          className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 transition-all flex items-center justify-center gap-2 shadow-md mt-2"
+          className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 transition-all flex items-center justify-center gap-2 shadow-md mt-2 ios-spring shrink-0"
         >
           <Download className="w-4 h-4 text-slate-300" />
           <span>Export GIS CSV Dataset</span>
@@ -180,7 +180,7 @@ export const GISMap: React.FC<GISMapProps> = ({
       </div>
 
       {/* MAP CANVAS AREA WITH POPUP SECTOR DETAIL CARD */}
-      <div className="flex-1 relative w-full h-full min-h-[400px] bg-slate-950 overflow-hidden">
+      <div className="order-1 md:order-2 flex-1 relative w-full h-full min-h-[50vh] md:min-h-[400px] bg-slate-200 dark:bg-slate-950 overflow-hidden">
         
         {/* Dynamic Leaflet Map Canvas */}
         <div className="absolute inset-0 z-0">
@@ -247,15 +247,15 @@ export const GISMap: React.FC<GISMapProps> = ({
 
         {/* MAP OVERLAY: COMPACT SECTOR DETAIL CARD (NO EMPTY GAP) */}
         {selectedSector && (
-          <div className="absolute top-4 right-4 z-30 max-w-sm w-full bg-slate-900/95 backdrop-blur-2xl border border-slate-700/80 rounded-3xl p-5 shadow-2xl text-white space-y-4 animate-in fade-in slide-in-from-right-4">
+          <div className="absolute top-2 left-2 right-2 md:left-auto md:top-4 md:right-4 z-30 max-w-none md:max-w-sm w-auto bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200 dark:border-slate-700/80 rounded-3xl p-5 shadow-2xl text-slate-900 dark:text-white space-y-4 animate-in fade-in zoom-in-95 duration-300 pointer-events-auto">
             
             {/* Header */}
-            <div className="flex items-start justify-between pb-3 border-b border-slate-800">
+            <div className="flex items-start justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
               <div>
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-slate-700">
                   {selectedSector.id} • {selectedSector.oceanBasin}
                 </span>
-                <h4 className="text-base font-extrabold text-white mt-1">{selectedSector.name}</h4>
+                <h4 className="text-base font-extrabold text-slate-900 dark:text-white mt-1">{selectedSector.name}</h4>
               </div>
               <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                 selectedSector.pollutionRisk === 'Critical' ? 'bg-rose-500/20 text-rose-400' : 'bg-emerald-500/20 text-emerald-400'
@@ -266,36 +266,36 @@ export const GISMap: React.FC<GISMapProps> = ({
 
             {/* Comprehensive Telemetry Metrics (No Empty Space) */}
             <div className="grid grid-cols-2 gap-2.5 text-xs font-mono">
-              <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-slate-400 text-[10px] block">Ocean Health Score</span>
-                <strong className="text-white text-sm">{selectedSector.healthScore} / 100</strong>
+              <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 transition-all hover:scale-105 duration-200">
+                <span className="text-slate-500 dark:text-slate-400 text-[10px] block">Ocean Health Score</span>
+                <strong className="text-slate-900 dark:text-white text-sm">{selectedSector.healthScore} / 100</strong>
               </div>
 
-              <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-slate-400 text-[10px] block">Patrol Depth</span>
-                <strong className="text-slate-300 text-sm">{selectedSector.depthMeters} meters</strong>
+              <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 transition-all hover:scale-105 duration-200">
+                <span className="text-slate-500 dark:text-slate-400 text-[10px] block">Patrol Depth</span>
+                <strong className="text-slate-700 dark:text-slate-300 text-sm">{selectedSector.depthMeters} meters</strong>
               </div>
 
-              <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-slate-400 text-[10px] block">Water Quality Status</span>
-                <strong className="text-slate-300 text-xs truncate block">{selectedSector.waterQuality}</strong>
+              <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 transition-all hover:scale-105 duration-200">
+                <span className="text-slate-500 dark:text-slate-400 text-[10px] block">Water Quality Status</span>
+                <strong className="text-slate-700 dark:text-slate-300 text-xs truncate block">{selectedSector.waterQuality}</strong>
               </div>
 
-              <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-slate-400 text-[10px] block">Primary Environmental Threat</span>
-                <strong className="text-rose-400 text-xs truncate block">{selectedSector.primaryThreat}</strong>
+              <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 transition-all hover:scale-105 duration-200">
+                <span className="text-slate-500 dark:text-slate-400 text-[10px] block">Primary Environmental Threat</span>
+                <strong className="text-rose-500 dark:text-rose-400 text-xs truncate block">{selectedSector.primaryThreat}</strong>
               </div>
             </div>
 
             {/* Sensor Specs */}
-            <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-[11px] space-y-1">
-              <div className="flex justify-between text-slate-400">
+            <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-[11px] space-y-1 transition-all hover:scale-105 duration-200">
+              <div className="flex justify-between text-slate-500 dark:text-slate-400">
                 <span>Sensor Type:</span>
-                <strong className="text-white">{selectedSector.scanType}</strong>
+                <strong className="text-slate-900 dark:text-white">{selectedSector.scanType}</strong>
               </div>
-              <div className="flex justify-between text-slate-400">
+              <div className="flex justify-between text-slate-500 dark:text-slate-400">
                 <span>Coordinates:</span>
-                <strong className="text-emerald-400 font-mono">{selectedSector.lat}° N, {selectedSector.lng}° W</strong>
+                <strong className="text-emerald-600 dark:text-emerald-400 font-mono">{selectedSector.lat}° N, {selectedSector.lng}° W</strong>
               </div>
             </div>
 
@@ -303,7 +303,7 @@ export const GISMap: React.FC<GISMapProps> = ({
             <div className="grid grid-cols-2 gap-2 pt-1">
               <button
                 onClick={() => exportDatasetAsFile(selectedSector.name, 'CSV')}
-                className="py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 transition-all flex items-center justify-center gap-1.5"
+                className="py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 transition-all flex items-center justify-center gap-1.5 ios-spring"
               >
                 <Download className="w-3.5 h-3.5 text-slate-300" />
                 <span>Sector CSV</span>
@@ -311,7 +311,7 @@ export const GISMap: React.FC<GISMapProps> = ({
 
               <Link
                 href="/predictive-map"
-                className="py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 transition-all flex items-center justify-center gap-1.5"
+                className="py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 transition-all flex items-center justify-center gap-1.5 ios-spring"
               >
                 <span>30-Day Risk →</span>
               </Link>
